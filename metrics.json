@@ -1,10 +1,10 @@
 {
-  "collected_at": "2026-11-22T12:57:23+00:00",
+  "collected_at": "2026-11-22T13:13:41+00:00",
   "python": "3.11.9",
   "test_files": 5,
   "test_cases": 61,
   "package_py_files": 10,
-  "package_loc": 640,
+  "package_loc": 682,
   "tests_loc": 241,
   "fixtures": {
     "roles": 5,
@@ -19,8 +19,8 @@
     "sites": 2
   },
   "pytest_exit": 0,
-  "pytest_last_line": "61 passed in 0.41s",
-  "pytest_stdout_sha256": "e3dfbf253b5241ca5500348baa56a7b778105e93d41bc2591a41a37e0772a300",
+  "pytest_last_line": "61 passed in 0.39s",
+  "pytest_stdout_sha256": "e1613dd9d76584a4c47f70cbb6b15485b855786680c0826dbe6876807e93287d",
   "leak_questions": 100,
   "leak_principals": 5,
   "leak_checks": 11100,
@@ -28,10 +28,48 @@
   "leak_pass_rate": 1.0,
   "leak_positive_citations": 1008,
   "leak_dropped_total": 1992,
+  "leak_per_role": {
+    "front": {
+      "questions": 100,
+      "checks": 2400,
+      "hits": 0,
+      "citations": 155
+    },
+    "community": {
+      "questions": 100,
+      "checks": 2300,
+      "hits": 0,
+      "citations": 171
+    },
+    "sales": {
+      "questions": 100,
+      "checks": 2400,
+      "hits": 0,
+      "citations": 185
+    },
+    "sales_lead": {
+      "questions": 100,
+      "checks": 2000,
+      "hits": 0,
+      "citations": 269
+    },
+    "finance": {
+      "questions": 100,
+      "checks": 2000,
+      "hits": 0,
+      "citations": 228
+    }
+  },
+  "fold_marker": "「该内容已无权查看」",
+  "fold_marker_count": 3,
+  "fold_citations": 1,
+  "fold_marker_count_when_role_kept": 0,
+  "fold_citations_when_role_kept": 0,
   "secret_scan": {
     "scanned": 5,
     "hits": [],
     "hit_count": 0
   },
-  "tree_sha256": "240f663e5e881acc0a60fbc4665808c5f16914e3b059cb94c742bcef56bbae40"
+  "secret_scan_hits": 0,
+  "tree_sha256": "98d32d9f3ee9be314ac7eb6d655ff3fa2f3f6a4a4d259b99d99b413a014b5a36"
 }

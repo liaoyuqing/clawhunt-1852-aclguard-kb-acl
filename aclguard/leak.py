@@ -34,6 +34,10 @@ class LeakRun:
     positive_citations: int = 0
     dropped_total: int = 0
     failures: List[Dict[str, Any]] = field(default_factory=list)
+    # 正控样本：第一条「确实引用了可见条目」的记录，证明不是全空假通过
+    sample: Dict[str, Any] = field(default_factory=dict)
+    # 按角色拆分：便于报告出 5 行统计表
+    per_role: Dict[str, Dict[str, int]] = field(default_factory=dict)
 
     @property
     def pass_rate(self) -> float:
@@ -113,10 +117,15 @@ def run_leak_suite(
             assistant_turns = [m for m in session.messages if m.get("role") == "assistant"]
             surface = scan_surface(result, assistant_turns, model)
 
+            bucket = run.per_role.setdefault(key, {"questions": 0, "checks": 0, "hits": 0, "citations": 0})
+            bucket["questions"] += 1
+
             for entry in denied:
                 run.checks += 1
+                bucket["checks"] += 1
                 if scan_text(surface, entry):
                     run.hits += 1
+                    bucket["hits"] += 1
                     run.failures.append({
                         "qid": case.qid,
                         "asker": key,
@@ -124,7 +133,16 @@ def run_leak_suite(
                         "label": entry.visibility_label,
                     })
 
-            run.positive_citations += sum(1 for d in result["citations"] if d in visible_ids)
+            fresh = [d for d in result["citations"] if d in visible_ids]
+            run.positive_citations += len(fresh)
+            bucket["citations"] += len(fresh)
+            if fresh and not run.sample:
+                run.sample = {
+                    "qid": case.qid,
+                    "asker": key,
+                    "doc_id": fresh[0],
+                    "title": next(e.title for e in entries if e.doc_id == fresh[0]),
+                }
 
     return run
 
@@ -154,10 +172,35 @@ def to_report(run: LeakRun, path: Path) -> Path:
             lines.append("- %s / %s / %s / %s" % (item["qid"], item["asker"], item["leaked_doc_id"], item["label"]))
     lines += [
         "",
+        "## 分角色 0 命中统计表",
+        "",
+        "| 角色 key | 问答轮次 | 断言次数（无权条目） | 泄露命中 | 授权引用（正控） |",
+        "| --- | --- | --- | --- | --- |",
+    ]
+    for key in sorted(run.per_role):
+        b = run.per_role[key]
+        lines.append("| %s | %d | %d | %d | %d |" % (key, b["questions"], b["checks"], b["hits"], b["citations"]))
+    lines.append("| **合计** | %d | %d | %d | %d |" % (
+        sum(b["questions"] for b in run.per_role.values()),
+        sum(b["checks"] for b in run.per_role.values()),
+        sum(b["hits"] for b in run.per_role.values()),
+        sum(b["citations"] for b in run.per_role.values()),
+    ))
+    lines += [
+        "",
         "## 正控说明",
         "",
         "正控断言 `positive_citations = %d > 0`，证明不是「全部拒答」造成的假通过。" % run.positive_citations,
         "",
     ]
+    if run.sample:
+        lines += [
+            "正控样本（授权引用确实发生）：",
+            "",
+            "- 问题 `%s`，提问角色 `%s`，被授权引用条目 `%s`（`%s`）" % (
+                run.sample["qid"], run.sample["asker"], run.sample["doc_id"], run.sample["title"]),
+            "",
+        ]
+    lines.append("")
     path.write_text("\n".join(lines), encoding="utf-8")
     return path

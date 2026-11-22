@@ -72,13 +72,23 @@ def fixture_counts() -> dict:
     }
 
 
+# 不参与扫描与摘要的目录：虚拟环境、字节码缓存、pytest 缓存（后者每次跑测试都会变）
+SKIP_DIRS = (".venv/", ".pytest_cache/", "__pycache__/")
+
+
+def _skipped(rel: str) -> bool:
+    if rel.endswith(".pyc") or "__pycache__" in rel:
+        return True
+    return any(rel.startswith(d) or ("/" + d) in rel for d in SKIP_DIRS)
+
+
 def secret_scan() -> dict:
     hits = []
     for file in sorted(ROOT.rglob("*")):
         if not file.is_file():
             continue
         rel = file.relative_to(ROOT).as_posix()
-        if rel.startswith(".venv/") or "__pycache__" in rel or rel.endswith(".pyc"):
+        if _skipped(rel):
             continue
         if rel == "metrics.json":
             continue
@@ -108,6 +118,35 @@ def leak_metrics() -> dict:
         "leak_pass_rate": run.pass_rate,
         "leak_positive_citations": run.positive_citations,
         "leak_dropped_total": run.dropped_total,
+        "leak_per_role": run.per_role,
+    }
+
+
+def fold_metrics() -> dict:
+    """把 AC3 的「角色被收回」场景真跑一遍，数折叠标记出现的次数。"""
+    sys.path.insert(0, str(ROOT))
+    from aclguard.assistant import RecordingModelClient, Session, ask
+    from aclguard.history import FOLD_MARKER, render_history
+    from aclguard.iam_stub import load_roles
+    from aclguard.kb_stub import LeakyKnowledgeBase, load_entries
+
+    principals = load_roles()
+    sales = principals["sales"]
+    entries = load_entries()
+    kb = LeakyKnowledgeBase(entries)
+    session = Session(session_id="metrics-fold")
+    target = next(e for e in entries if e.doc_id == "doc-013")
+    ask(session, target.title + " 的具体要求是什么？", sales, kb, RecordingModelClient(),
+        cache=None, request_id="metrics-fold")
+    rendered_revoked, folded = render_history(session.messages, sales.without_roles(["sales_rep"]))
+    rendered_kept, folded_kept = render_history(session.messages, sales)
+    blob = json.dumps(rendered_revoked, ensure_ascii=False)
+    return {
+        "fold_marker": FOLD_MARKER,
+        "fold_marker_count": blob.count(FOLD_MARKER),
+        "fold_citations": folded,
+        "fold_marker_count_when_role_kept": json.dumps(rendered_kept, ensure_ascii=False).count(FOLD_MARKER),
+        "fold_citations_when_role_kept": folded_kept,
     }
 
 
@@ -117,13 +156,51 @@ def tree_digest() -> str:
         if not file.is_file():
             continue
         rel = file.relative_to(ROOT).as_posix()
-        if rel.startswith(".venv/") or "__pycache__" in rel or rel.endswith(".pyc"):
+        if _skipped(rel):
             continue
         if rel == "metrics.json":
             continue
         digest.update(rel.encode("utf-8"))
         digest.update(file.read_bytes())
     return digest.hexdigest()
+
+
+def metrics_block(payload: dict) -> str:
+    """渲染 README 里那段实测数字，保证正文与 metrics.json 永远同源。"""
+    fx = payload["fixtures"]
+    labels = fx["labels"]
+    return "\n".join([
+        # 末行里的耗时每次都不同，正文只写「用例数 + 退出码」，逐字末行以 metrics.json 为准，
+        # 这样 README 不会因为几毫秒的抖动而每跑一次都变，tree_sha256 才有可比性。
+        "- Python `%s`；`pytest -q` 结果 `%s`，退出码 `%s`（逐字末行与耗时见 `metrics.json`）" % (
+            payload["python"], payload["pytest_last_line"].split(" in ")[0], payload["pytest_exit"]),
+        "- 测试文件 `%d` 个、用例 `%d` 个；包内 `%d` 个 `.py`、有效代码行 `%d`；测试有效代码行 `%d`" % (
+            payload["test_files"], payload["test_cases"], payload["package_py_files"],
+            payload["package_loc"], payload["tests_loc"]),
+        "- 夹具：角色 `%d`、知识 `%d`（`all_staff` %d / `role_limited` %d / `site_limited` %d / `confidential` %d）、问题 `%d`、馆 `%d`" % (
+            fx["roles"], fx["entries"], labels.get("all_staff", 0), labels.get("role_limited", 0),
+            labels.get("site_limited", 0), labels.get("confidential", 0), fx["questions"], fx["sites"]),
+        "- 泄露测试：断言 `%d` 次、命中 `%d`、通过率 `%s`、正控引用 `%d` 次、被判丢弃片段累计 `%d` 次" % (
+            payload["leak_checks"], payload["leak_hits"], payload["leak_pass_rate"],
+            payload["leak_positive_citations"], payload["leak_dropped_total"]),
+        "- 折叠标记 `%s` 在角色被收回的渲染结果中出现 `%d` 次（折叠引用 `%d` 条），角色未收回时 `%d` 次" % (
+            payload["fold_marker"], payload["fold_marker_count"], payload["fold_citations"],
+            payload["fold_marker_count_when_role_kept"]),
+        "- 密钥扫描命中 `%d` 条（模式组 `%d` 个）" % (
+            payload["secret_scan"]["hit_count"], payload["secret_scan"]["scanned"]),
+    ])
+
+
+def sync_readme(payload: dict) -> None:
+    """把实测数字写回 README 的标记区间，避免正文与快照漂移。"""
+    path = ROOT / "README.md"
+    text = path.read_text(encoding="utf-8")
+    begin, end = "<!-- METRICS:BEGIN -->", "<!-- METRICS:END -->"
+    if begin not in text or end not in text:
+        return
+    head, rest = text.split(begin, 1)
+    _, tail = rest.split(end, 1)
+    path.write_text(head + begin + "\n" + metrics_block(payload) + "\n" + end + tail, encoding="utf-8")
 
 
 def main() -> int:
@@ -140,7 +217,12 @@ def main() -> int:
     }
     payload.update(run_pytest())
     payload.update(leak_metrics())
-    payload["secret_scan"] = secret_scan()
+    payload.update(fold_metrics())
+    scan = secret_scan()
+    payload["secret_scan"] = scan
+    payload["secret_scan_hits"] = scan["hit_count"]
+    # 先回填 README，再算目录摘要：否则摘要反映的是「上一轮」的 README，永远对不上最终文件。
+    sync_readme(payload)
     payload["tree_sha256"] = tree_digest()
     (ROOT / "metrics.json").write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(payload, ensure_ascii=False, indent=2))
