@@ -1,0 +1,71 @@
+{
+ "roles": [
+  {
+   "key": "front",
+   "subject_id": "u-front-01",
+   "display_name": "前台",
+   "roles": [
+    "front_desk"
+   ],
+   "site_id": "site-hz-01",
+   "data_scope": [
+    "kb_core",
+    "kb_front"
+   ]
+  },
+  {
+   "key": "community",
+   "subject_id": "u-comm-02",
+   "display_name": "社群运营",
+   "roles": [
+    "community_ops"
+   ],
+   "site_id": "site-hz-01",
+   "data_scope": [
+    "kb_core",
+    "kb_event"
+   ]
+  },
+  {
+   "key": "sales",
+   "subject_id": "u-sales-03",
+   "display_name": "招商业务员",
+   "roles": [
+    "sales_rep"
+   ],
+   "site_id": "site-sh-02",
+   "data_scope": [
+    "kb_core",
+    "kb_sales"
+   ]
+  },
+  {
+   "key": "sales_lead",
+   "subject_id": "u-lead-04",
+   "display_name": "招商主管",
+   "roles": [
+    "sales_rep",
+    "sales_lead"
+   ],
+   "site_id": "site-sh-02",
+   "data_scope": [
+    "kb_core",
+    "kb_sales",
+    "kb_lead"
+   ]
+  },
+  {
+   "key": "finance",
+   "subject_id": "u-fin-05",
+   "display_name": "财务",
+   "roles": [
+    "finance"
+   ],
+   "site_id": "site-hz-01",
+   "data_scope": [
+    "kb_core",
+    "kb_fin"
+   ]
+  }
+ ]
+}

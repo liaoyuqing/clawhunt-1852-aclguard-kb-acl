@@ -1,0 +1,604 @@
+{
+ "questions": [
+  {
+   "qid": "q-001",
+   "question": "入馆流程总览的具体要求是什么？",
+   "target_doc_id": "doc-001",
+   "asker": "front"
+  },
+  {
+   "qid": "q-002",
+   "question": "停车与访客登记的具体要求是什么？",
+   "target_doc_id": "doc-002",
+   "asker": "community"
+  },
+  {
+   "qid": "q-003",
+   "question": "会议室预约规则的具体要求是什么？",
+   "target_doc_id": "doc-003",
+   "asker": "sales"
+  },
+  {
+   "qid": "q-004",
+   "question": "访客WiFi连接说明的具体要求是什么？",
+   "target_doc_id": "doc-004",
+   "asker": "sales_lead"
+  },
+  {
+   "qid": "q-005",
+   "question": "打印与扫描服务的具体要求是什么？",
+   "target_doc_id": "doc-005",
+   "asker": "finance"
+  },
+  {
+   "qid": "q-006",
+   "question": "工位使用须知的具体要求是什么？",
+   "target_doc_id": "doc-006",
+   "asker": "front"
+  },
+  {
+   "qid": "q-007",
+   "question": "快递代收点开放时间的具体要求是什么？",
+   "target_doc_id": "doc-007",
+   "asker": "community"
+  },
+  {
+   "qid": "q-008",
+   "question": "公共休息区使用规范的具体要求是什么？",
+   "target_doc_id": "doc-008",
+   "asker": "sales"
+  },
+  {
+   "qid": "q-009",
+   "question": "楼宇门禁时间表的具体要求是什么？",
+   "target_doc_id": "doc-009",
+   "asker": "sales_lead"
+  },
+  {
+   "qid": "q-010",
+   "question": "报修工单入口的具体要求是什么？",
+   "target_doc_id": "doc-010",
+   "asker": "finance"
+  },
+  {
+   "qid": "q-011",
+   "question": "前台接待话术手册的具体要求是什么？",
+   "target_doc_id": "doc-011",
+   "asker": "front"
+  },
+  {
+   "qid": "q-012",
+   "question": "社群活动排期规范的具体要求是什么？",
+   "target_doc_id": "doc-012",
+   "asker": "community"
+  },
+  {
+   "qid": "q-013",
+   "question": "招商线索分配规则的具体要求是什么？",
+   "target_doc_id": "doc-013",
+   "asker": "sales"
+  },
+  {
+   "qid": "q-014",
+   "question": "招商报价审批层级的具体要求是什么？",
+   "target_doc_id": "doc-014",
+   "asker": "sales_lead"
+  },
+  {
+   "qid": "q-015",
+   "question": "财务对账周期说明的具体要求是什么？",
+   "target_doc_id": "doc-015",
+   "asker": "finance"
+  },
+  {
+   "qid": "q-016",
+   "question": "财务发票开具流程的具体要求是什么？",
+   "target_doc_id": "doc-016",
+   "asker": "front"
+  },
+  {
+   "qid": "q-017",
+   "question": "招商主管周会材料模板的具体要求是什么？",
+   "target_doc_id": "doc-017",
+   "asker": "community"
+  },
+  {
+   "qid": "q-018",
+   "question": "社群运营内容审核清单的具体要求是什么？",
+   "target_doc_id": "doc-018",
+   "asker": "sales"
+  },
+  {
+   "qid": "q-019",
+   "question": "前台访客异常处置流程的具体要求是什么？",
+   "target_doc_id": "doc-019",
+   "asker": "sales_lead"
+  },
+  {
+   "qid": "q-020",
+   "question": "财务预算调整申请路径的具体要求是什么？",
+   "target_doc_id": "doc-020",
+   "asker": "finance"
+  },
+  {
+   "qid": "q-021",
+   "question": "招商合同用印流程的具体要求是什么？",
+   "target_doc_id": "doc-021",
+   "asker": "front"
+  },
+  {
+   "qid": "q-022",
+   "question": "社群运营月度目标口径的具体要求是什么？",
+   "target_doc_id": "doc-022",
+   "asker": "community"
+  },
+  {
+   "qid": "q-023",
+   "question": "杭州馆场地平面图的具体要求是什么？",
+   "target_doc_id": "doc-023",
+   "asker": "sales"
+  },
+  {
+   "qid": "q-024",
+   "question": "上海馆场地平面图的具体要求是什么？",
+   "target_doc_id": "doc-024",
+   "asker": "sales_lead"
+  },
+  {
+   "qid": "q-025",
+   "question": "杭州馆合作渠道清单的具体要求是什么？",
+   "target_doc_id": "doc-025",
+   "asker": "finance"
+  },
+  {
+   "qid": "q-026",
+   "question": "上海馆合作渠道清单的具体要求是什么？",
+   "target_doc_id": "doc-026",
+   "asker": "front"
+  },
+  {
+   "qid": "q-027",
+   "question": "杭州馆活动场地档期的具体要求是什么？",
+   "target_doc_id": "doc-027",
+   "asker": "community"
+  },
+  {
+   "qid": "q-028",
+   "question": "上海馆活动场地档期的具体要求是什么？",
+   "target_doc_id": "doc-028",
+   "asker": "sales"
+  },
+  {
+   "qid": "q-029",
+   "question": "杭州馆停车券额度的具体要求是什么？",
+   "target_doc_id": "doc-029",
+   "asker": "sales_lead"
+  },
+  {
+   "qid": "q-030",
+   "question": "上海馆停车券额度的具体要求是什么？",
+   "target_doc_id": "doc-030",
+   "asker": "finance"
+  },
+  {
+   "qid": "q-031",
+   "question": "杭州馆会员走访路线的具体要求是什么？",
+   "target_doc_id": "doc-031",
+   "asker": "front"
+  },
+  {
+   "qid": "q-032",
+   "question": "上海馆会员走访路线的具体要求是什么？",
+   "target_doc_id": "doc-032",
+   "asker": "community"
+  },
+  {
+   "qid": "q-033",
+   "question": "某会员企业续约谈判要点的具体要求是什么？",
+   "target_doc_id": "doc-033",
+   "asker": "sales"
+  },
+  {
+   "qid": "q-034",
+   "question": "年度预算未公开草稿的具体要求是什么？",
+   "target_doc_id": "doc-034",
+   "asker": "sales_lead"
+  },
+  {
+   "qid": "q-035",
+   "question": "高管人事调整方案的具体要求是什么？",
+   "target_doc_id": "doc-035",
+   "asker": "finance"
+  },
+  {
+   "qid": "q-036",
+   "question": "三家会员企业欠款清单的具体要求是什么？",
+   "target_doc_id": "doc-036",
+   "asker": "front"
+  },
+  {
+   "qid": "q-037",
+   "question": "并购意向内部备忘的具体要求是什么？",
+   "target_doc_id": "doc-037",
+   "asker": "community"
+  },
+  {
+   "qid": "q-038",
+   "question": "供应商比价底价表的具体要求是什么？",
+   "target_doc_id": "doc-038",
+   "asker": "sales"
+  },
+  {
+   "qid": "q-039",
+   "question": "股东分红测算表的具体要求是什么？",
+   "target_doc_id": "doc-039",
+   "asker": "sales_lead"
+  },
+  {
+   "qid": "q-040",
+   "question": "区域扩张选址评估的具体要求是什么？",
+   "target_doc_id": "doc-040",
+   "asker": "finance"
+  },
+  {
+   "qid": "q-041",
+   "question": "入馆流程总览的具体要求是什么？",
+   "target_doc_id": "doc-001",
+   "asker": "front"
+  },
+  {
+   "qid": "q-042",
+   "question": "停车与访客登记的具体要求是什么？",
+   "target_doc_id": "doc-002",
+   "asker": "community"
+  },
+  {
+   "qid": "q-043",
+   "question": "会议室预约规则的具体要求是什么？",
+   "target_doc_id": "doc-003",
+   "asker": "sales"
+  },
+  {
+   "qid": "q-044",
+   "question": "访客WiFi连接说明的具体要求是什么？",
+   "target_doc_id": "doc-004",
+   "asker": "sales_lead"
+  },
+  {
+   "qid": "q-045",
+   "question": "打印与扫描服务的具体要求是什么？",
+   "target_doc_id": "doc-005",
+   "asker": "finance"
+  },
+  {
+   "qid": "q-046",
+   "question": "工位使用须知的具体要求是什么？",
+   "target_doc_id": "doc-006",
+   "asker": "front"
+  },
+  {
+   "qid": "q-047",
+   "question": "快递代收点开放时间的具体要求是什么？",
+   "target_doc_id": "doc-007",
+   "asker": "community"
+  },
+  {
+   "qid": "q-048",
+   "question": "公共休息区使用规范的具体要求是什么？",
+   "target_doc_id": "doc-008",
+   "asker": "sales"
+  },
+  {
+   "qid": "q-049",
+   "question": "楼宇门禁时间表的具体要求是什么？",
+   "target_doc_id": "doc-009",
+   "asker": "sales_lead"
+  },
+  {
+   "qid": "q-050",
+   "question": "报修工单入口的具体要求是什么？",
+   "target_doc_id": "doc-010",
+   "asker": "finance"
+  },
+  {
+   "qid": "q-051",
+   "question": "前台接待话术手册的具体要求是什么？",
+   "target_doc_id": "doc-011",
+   "asker": "front"
+  },
+  {
+   "qid": "q-052",
+   "question": "社群活动排期规范的具体要求是什么？",
+   "target_doc_id": "doc-012",
+   "asker": "community"
+  },
+  {
+   "qid": "q-053",
+   "question": "招商线索分配规则的具体要求是什么？",
+   "target_doc_id": "doc-013",
+   "asker": "sales"
+  },
+  {
+   "qid": "q-054",
+   "question": "招商报价审批层级的具体要求是什么？",
+   "target_doc_id": "doc-014",
+   "asker": "sales_lead"
+  },
+  {
+   "qid": "q-055",
+   "question": "财务对账周期说明的具体要求是什么？",
+   "target_doc_id": "doc-015",
+   "asker": "finance"
+  },
+  {
+   "qid": "q-056",
+   "question": "财务发票开具流程的具体要求是什么？",
+   "target_doc_id": "doc-016",
+   "asker": "front"
+  },
+  {
+   "qid": "q-057",
+   "question": "招商主管周会材料模板的具体要求是什么？",
+   "target_doc_id": "doc-017",
+   "asker": "community"
+  },
+  {
+   "qid": "q-058",
+   "question": "社群运营内容审核清单的具体要求是什么？",
+   "target_doc_id": "doc-018",
+   "asker": "sales"
+  },
+  {
+   "qid": "q-059",
+   "question": "前台访客异常处置流程的具体要求是什么？",
+   "target_doc_id": "doc-019",
+   "asker": "sales_lead"
+  },
+  {
+   "qid": "q-060",
+   "question": "财务预算调整申请路径的具体要求是什么？",
+   "target_doc_id": "doc-020",
+   "asker": "finance"
+  },
+  {
+   "qid": "q-061",
+   "question": "招商合同用印流程的具体要求是什么？",
+   "target_doc_id": "doc-021",
+   "asker": "front"
+  },
+  {
+   "qid": "q-062",
+   "question": "社群运营月度目标口径的具体要求是什么？",
+   "target_doc_id": "doc-022",
+   "asker": "community"
+  },
+  {
+   "qid": "q-063",
+   "question": "杭州馆场地平面图的具体要求是什么？",
+   "target_doc_id": "doc-023",
+   "asker": "sales"
+  },
+  {
+   "qid": "q-064",
+   "question": "上海馆场地平面图的具体要求是什么？",
+   "target_doc_id": "doc-024",
+   "asker": "sales_lead"
+  },
+  {
+   "qid": "q-065",
+   "question": "杭州馆合作渠道清单的具体要求是什么？",
+   "target_doc_id": "doc-025",
+   "asker": "finance"
+  },
+  {
+   "qid": "q-066",
+   "question": "上海馆合作渠道清单的具体要求是什么？",
+   "target_doc_id": "doc-026",
+   "asker": "front"
+  },
+  {
+   "qid": "q-067",
+   "question": "杭州馆活动场地档期的具体要求是什么？",
+   "target_doc_id": "doc-027",
+   "asker": "community"
+  },
+  {
+   "qid": "q-068",
+   "question": "上海馆活动场地档期的具体要求是什么？",
+   "target_doc_id": "doc-028",
+   "asker": "sales"
+  },
+  {
+   "qid": "q-069",
+   "question": "杭州馆停车券额度的具体要求是什么？",
+   "target_doc_id": "doc-029",
+   "asker": "sales_lead"
+  },
+  {
+   "qid": "q-070",
+   "question": "上海馆停车券额度的具体要求是什么？",
+   "target_doc_id": "doc-030",
+   "asker": "finance"
+  },
+  {
+   "qid": "q-071",
+   "question": "杭州馆会员走访路线的具体要求是什么？",
+   "target_doc_id": "doc-031",
+   "asker": "front"
+  },
+  {
+   "qid": "q-072",
+   "question": "上海馆会员走访路线的具体要求是什么？",
+   "target_doc_id": "doc-032",
+   "asker": "community"
+  },
+  {
+   "qid": "q-073",
+   "question": "某会员企业续约谈判要点的具体要求是什么？",
+   "target_doc_id": "doc-033",
+   "asker": "sales"
+  },
+  {
+   "qid": "q-074",
+   "question": "年度预算未公开草稿的具体要求是什么？",
+   "target_doc_id": "doc-034",
+   "asker": "sales_lead"
+  },
+  {
+   "qid": "q-075",
+   "question": "高管人事调整方案的具体要求是什么？",
+   "target_doc_id": "doc-035",
+   "asker": "finance"
+  },
+  {
+   "qid": "q-076",
+   "question": "三家会员企业欠款清单的具体要求是什么？",
+   "target_doc_id": "doc-036",
+   "asker": "front"
+  },
+  {
+   "qid": "q-077",
+   "question": "并购意向内部备忘的具体要求是什么？",
+   "target_doc_id": "doc-037",
+   "asker": "community"
+  },
+  {
+   "qid": "q-078",
+   "question": "供应商比价底价表的具体要求是什么？",
+   "target_doc_id": "doc-038",
+   "asker": "sales"
+  },
+  {
+   "qid": "q-079",
+   "question": "股东分红测算表的具体要求是什么？",
+   "target_doc_id": "doc-039",
+   "asker": "sales_lead"
+  },
+  {
+   "qid": "q-080",
+   "question": "区域扩张选址评估的具体要求是什么？",
+   "target_doc_id": "doc-040",
+   "asker": "finance"
+  },
+  {
+   "qid": "q-081",
+   "question": "入馆流程总览的具体要求是什么？",
+   "target_doc_id": "doc-001",
+   "asker": "front"
+  },
+  {
+   "qid": "q-082",
+   "question": "停车与访客登记的具体要求是什么？",
+   "target_doc_id": "doc-002",
+   "asker": "community"
+  },
+  {
+   "qid": "q-083",
+   "question": "会议室预约规则的具体要求是什么？",
+   "target_doc_id": "doc-003",
+   "asker": "sales"
+  },
+  {
+   "qid": "q-084",
+   "question": "访客WiFi连接说明的具体要求是什么？",
+   "target_doc_id": "doc-004",
+   "asker": "sales_lead"
+  },
+  {
+   "qid": "q-085",
+   "question": "打印与扫描服务的具体要求是什么？",
+   "target_doc_id": "doc-005",
+   "asker": "finance"
+  },
+  {
+   "qid": "q-086",
+   "question": "工位使用须知的具体要求是什么？",
+   "target_doc_id": "doc-006",
+   "asker": "front"
+  },
+  {
+   "qid": "q-087",
+   "question": "快递代收点开放时间的具体要求是什么？",
+   "target_doc_id": "doc-007",
+   "asker": "community"
+  },
+  {
+   "qid": "q-088",
+   "question": "公共休息区使用规范的具体要求是什么？",
+   "target_doc_id": "doc-008",
+   "asker": "sales"
+  },
+  {
+   "qid": "q-089",
+   "question": "楼宇门禁时间表的具体要求是什么？",
+   "target_doc_id": "doc-009",
+   "asker": "sales_lead"
+  },
+  {
+   "qid": "q-090",
+   "question": "报修工单入口的具体要求是什么？",
+   "target_doc_id": "doc-010",
+   "asker": "finance"
+  },
+  {
+   "qid": "q-091",
+   "question": "前台接待话术手册的具体要求是什么？",
+   "target_doc_id": "doc-011",
+   "asker": "front"
+  },
+  {
+   "qid": "q-092",
+   "question": "社群活动排期规范的具体要求是什么？",
+   "target_doc_id": "doc-012",
+   "asker": "community"
+  },
+  {
+   "qid": "q-093",
+   "question": "招商线索分配规则的具体要求是什么？",
+   "target_doc_id": "doc-013",
+   "asker": "sales"
+  },
+  {
+   "qid": "q-094",
+   "question": "招商报价审批层级的具体要求是什么？",
+   "target_doc_id": "doc-014",
+   "asker": "sales_lead"
+  },
+  {
+   "qid": "q-095",
+   "question": "财务对账周期说明的具体要求是什么？",
+   "target_doc_id": "doc-015",
+   "asker": "finance"
+  },
+  {
+   "qid": "q-096",
+   "question": "财务发票开具流程的具体要求是什么？",
+   "target_doc_id": "doc-016",
+   "asker": "front"
+  },
+  {
+   "qid": "q-097",
+   "question": "招商主管周会材料模板的具体要求是什么？",
+   "target_doc_id": "doc-017",
+   "asker": "community"
+  },
+  {
+   "qid": "q-098",
+   "question": "社群运营内容审核清单的具体要求是什么？",
+   "target_doc_id": "doc-018",
+   "asker": "sales"
+  },
+  {
+   "qid": "q-099",
+   "question": "前台访客异常处置流程的具体要求是什么？",
+   "target_doc_id": "doc-019",
+   "asker": "sales_lead"
+  },
+  {
+   "qid": "q-100",
+   "question": "财务预算调整申请路径的具体要求是什么？",
+   "target_doc_id": "doc-020",
+   "asker": "finance"
+  }
+ ]
+}

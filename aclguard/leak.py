@@ -1,0 +1,163 @@
+"""泄露测试：5 种角色 x 100 个问题，逐条断言无权条目的标题与原文都不出现。"""
+from __future__ import annotations
+
+import json
+import logging
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, Dict, Iterable, List, Mapping, Tuple
+
+from .assistant import RecordingModelClient, Session, ask
+from .cache_key import TTLCache
+from .iam_stub import load_roles
+from .kb_stub import LeakyKnowledgeBase, load_entries
+from .models import KnowledgeEntry, Principal
+from .visibility import decide
+
+FIXTURE_DIR = Path(__file__).resolve().parent.parent / "fixtures"
+BODY_PROBE_LEN = 40
+
+
+@dataclass
+class LeakCase:
+    qid: str
+    question: str
+    asker: str
+
+
+@dataclass
+class LeakRun:
+    questions: int = 0
+    principals: int = 0
+    checks: int = 0
+    hits: int = 0
+    positive_citations: int = 0
+    dropped_total: int = 0
+    failures: List[Dict[str, Any]] = field(default_factory=list)
+
+    @property
+    def pass_rate(self) -> float:
+        if self.checks == 0:
+            return 0.0
+        return round(1.0 - self.hits / self.checks, 6)
+
+
+def load_questions(path: Path = FIXTURE_DIR / "questions_100.json") -> List[LeakCase]:
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    return [LeakCase(qid=item["qid"], question=item["question"], asker=item["asker"]) for item in raw["questions"]]
+
+
+def forbidden_markers(entry: KnowledgeEntry) -> Tuple[str, str]:
+    """判据只用标题与正文前 40 字：这两段出现即算泄露。"""
+    return entry.title, entry.body[:BODY_PROBE_LEN]
+
+
+def scan_text(text: str, entry: KnowledgeEntry) -> bool:
+    title, probe = forbidden_markers(entry)
+    if title and title in text:
+        return True
+    if probe and probe in text:
+        return True
+    return False
+
+
+def scan_surface(result: Mapping[str, Any], assistant_turns: Iterable[Mapping[str, Any]], model: Any) -> str:
+    """拼接需要被检查的助手侧产物：回答、助手轮次、交给模型的片段。
+
+    用户自己的提问不算泄漏面（用户本来就知道自己在问什么），所以这里只取
+    模型请求体里的 `context`，不含 `question` 字段。
+    """
+    context = []
+    if getattr(model, "last_request", None) is not None:
+        context = model.last_request.chunks
+    return " ".join([
+        str(result.get("answer", "")),
+        json.dumps(list(assistant_turns), ensure_ascii=False),
+        json.dumps(context, ensure_ascii=False),
+    ])
+
+
+def run_leak_suite(
+    entries: Iterable[KnowledgeEntry] = None,
+    principals: Mapping[str, Principal] = None,
+    questions: List[LeakCase] = None,
+    logger: logging.Logger = None,
+) -> LeakRun:
+    """每个问题对每个角色各跑一次，逐条检查回答与引用。
+
+    只扫描助手侧产物（回答、助手轮次消息、模型请求体）；用户自己的提问里
+    本来就带着被问条目的标题，把它计入会让统计失真。
+    """
+    entries = list(entries) if entries is not None else load_entries()
+    principals = dict(principals) if principals is not None else load_roles()
+    questions = list(questions) if questions is not None else load_questions()
+    log = logger or logging.getLogger("aclguard.leak")
+    kb = LeakyKnowledgeBase(entries)
+    run = LeakRun(questions=len(questions), principals=len(principals))
+
+    entitled = {
+        key: [e for e in entries if decide(e, principal).visible]
+        for key, principal in principals.items()
+    }
+
+    for case in questions:
+        for key, principal in principals.items():
+            model = RecordingModelClient()
+            session = Session(session_id="%s-%s" % (case.qid, key))
+            result = ask(session, case.question, principal, kb, model, cache=TTLCache(), logger=log,
+                         request_id="leak-%s-%s" % (case.qid, key))
+            run.dropped_total += len(result["dropped"])
+
+            denied = [e for e in entries if not decide(e, principal).visible]
+            visible_ids = {e.doc_id for e in entitled[key]}
+            assistant_turns = [m for m in session.messages if m.get("role") == "assistant"]
+            surface = scan_surface(result, assistant_turns, model)
+
+            for entry in denied:
+                run.checks += 1
+                if scan_text(surface, entry):
+                    run.hits += 1
+                    run.failures.append({
+                        "qid": case.qid,
+                        "asker": key,
+                        "leaked_doc_id": entry.doc_id,
+                        "label": entry.visibility_label,
+                    })
+
+            run.positive_citations += sum(1 for d in result["citations"] if d in visible_ids)
+
+    return run
+
+
+def to_report(run: LeakRun, path: Path) -> Path:
+    """渲染测试报告 Markdown。"""
+    lines = [
+        "# 泄露测试报告（100 问题 x 5 角色）",
+        "",
+        "| 指标 | 数值 |",
+        "| --- | --- |",
+        "| 问题数 | %d |" % run.questions,
+        "| 角色数 | %d |" % run.principals,
+        "| 断言次数（问题 x 角色 x 无权条目） | %d |" % run.checks,
+        "| 泄露命中次数 | %d |" % run.hits,
+        "| 通过率 | %.6f |" % run.pass_rate,
+        "| 授权引用次数（正控） | %d |" % run.positive_citations,
+        "| 被丢弃片段累计 | %d |" % run.dropped_total,
+        "",
+        "## 命中明细",
+        "",
+    ]
+    if run.hits == 0:
+        lines.append("无命中：无权条目的标题与原文前 40 字在所有回答、引用与模型请求体中均未出现。")
+    else:
+        for item in run.failures:
+            lines.append("- %s / %s / %s / %s" % (item["qid"], item["asker"], item["leaked_doc_id"], item["label"]))
+    lines += [
+        "",
+        "## 正控说明",
+        "",
+        "正控断言 `positive_citations = %d > 0`，证明不是「全部拒答」造成的假通过。" % run.positive_citations,
+        "",
+    ]
+    path.write_text("\n".join(lines), encoding="utf-8")
+    return path

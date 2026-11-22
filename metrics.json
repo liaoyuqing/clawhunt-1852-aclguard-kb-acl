@@ -1,0 +1,37 @@
+{
+  "collected_at": "2026-11-22T12:20:51+00:00",
+  "python": "3.11.9",
+  "test_files": 5,
+  "test_cases": 61,
+  "package_py_files": 10,
+  "package_loc": 608,
+  "tests_loc": 241,
+  "fixtures": {
+    "roles": 5,
+    "entries": 40,
+    "questions": 100,
+    "labels": {
+      "all_staff": 10,
+      "confidential": 8,
+      "role_limited": 12,
+      "site_limited": 10
+    },
+    "sites": 2
+  },
+  "pytest_exit": 0,
+  "pytest_last_line": "61 passed in 0.38s",
+  "pytest_stdout_sha256": "b5a3963f9c9cbfb906ac1ad5cfee179e18da542848e23a5d3455e88130827f93",
+  "leak_questions": 100,
+  "leak_principals": 5,
+  "leak_checks": 11100,
+  "leak_hits": 0,
+  "leak_pass_rate": 1.0,
+  "leak_positive_citations": 1008,
+  "leak_dropped_total": 1992,
+  "secret_scan": {
+    "scanned": 5,
+    "hits": [],
+    "hit_count": 0
+  },
+  "tree_sha256": "a234e1a9d476d6e78af9d7bbba9383c8542d5fb1baab1ebc8516093590a0c5a5"
+}

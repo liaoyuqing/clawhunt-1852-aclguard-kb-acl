@@ -1,0 +1,356 @@
+{
+ "entries": [
+  {
+   "doc_id": "doc-001",
+   "title": "入馆流程总览",
+   "body": "入馆流程总览的完整说明（虚构样例）：入馆流程总览适用于所有会员与员工，共 5 个步骤，具体到访前需在自助终端确认。本段为虚构测试文本，不含任何真实主体信息。编号 1",
+   "visibility_label": "all_staff",
+   "module": "kb_core"
+  },
+  {
+   "doc_id": "doc-002",
+   "title": "停车与访客登记",
+   "body": "停车与访客登记的完整说明（虚构样例）：停车与访客登记适用于所有会员与员工，共 5 个步骤，具体到访前需在自助终端确认。本段为虚构测试文本，不含任何真实主体信息。编号 2",
+   "visibility_label": "all_staff",
+   "module": "kb_core"
+  },
+  {
+   "doc_id": "doc-003",
+   "title": "会议室预约规则",
+   "body": "会议室预约规则的完整说明（虚构样例）：会议室预约规则适用于所有会员与员工，共 5 个步骤，具体到访前需在自助终端确认。本段为虚构测试文本，不含任何真实主体信息。编号 3",
+   "visibility_label": "all_staff",
+   "module": "kb_core"
+  },
+  {
+   "doc_id": "doc-004",
+   "title": "访客WiFi连接说明",
+   "body": "访客WiFi连接说明的完整说明（虚构样例）：访客WiFi连接说明适用于所有会员与员工，共 5 个步骤，具体到访前需在自助终端确认。本段为虚构测试文本，不含任何真实主体信息。编号 4",
+   "visibility_label": "all_staff",
+   "module": "kb_core"
+  },
+  {
+   "doc_id": "doc-005",
+   "title": "打印与扫描服务",
+   "body": "打印与扫描服务的完整说明（虚构样例）：打印与扫描服务适用于所有会员与员工，共 5 个步骤，具体到访前需在自助终端确认。本段为虚构测试文本，不含任何真实主体信息。编号 5",
+   "visibility_label": "all_staff",
+   "module": "kb_core"
+  },
+  {
+   "doc_id": "doc-006",
+   "title": "工位使用须知",
+   "body": "工位使用须知的完整说明（虚构样例）：工位使用须知适用于所有会员与员工，共 5 个步骤，具体到访前需在自助终端确认。本段为虚构测试文本，不含任何真实主体信息。编号 6",
+   "visibility_label": "all_staff",
+   "module": "kb_core"
+  },
+  {
+   "doc_id": "doc-007",
+   "title": "快递代收点开放时间",
+   "body": "快递代收点开放时间的完整说明（虚构样例）：快递代收点开放时间适用于所有会员与员工，共 5 个步骤，具体到访前需在自助终端确认。本段为虚构测试文本，不含任何真实主体信息。编号 7",
+   "visibility_label": "all_staff",
+   "module": "kb_core"
+  },
+  {
+   "doc_id": "doc-008",
+   "title": "公共休息区使用规范",
+   "body": "公共休息区使用规范的完整说明（虚构样例）：公共休息区使用规范适用于所有会员与员工，共 5 个步骤，具体到访前需在自助终端确认。本段为虚构测试文本，不含任何真实主体信息。编号 8",
+   "visibility_label": "all_staff",
+   "module": "kb_core"
+  },
+  {
+   "doc_id": "doc-009",
+   "title": "楼宇门禁时间表",
+   "body": "楼宇门禁时间表的完整说明（虚构样例）：楼宇门禁时间表适用于所有会员与员工，共 5 个步骤，具体到访前需在自助终端确认。本段为虚构测试文本，不含任何真实主体信息。编号 9",
+   "visibility_label": "all_staff",
+   "module": "kb_core"
+  },
+  {
+   "doc_id": "doc-010",
+   "title": "报修工单入口",
+   "body": "报修工单入口的完整说明（虚构样例）：报修工单入口适用于所有会员与员工，共 5 个步骤，具体到访前需在自助终端确认。本段为虚构测试文本，不含任何真实主体信息。编号 10",
+   "visibility_label": "all_staff",
+   "module": "kb_core"
+  },
+  {
+   "doc_id": "doc-011",
+   "title": "前台接待话术手册",
+   "body": "前台接待话术手册仅对 front 岗位开放（虚构样例）：包含 4 条操作要点与 2 个常见错误，错误示例为把审批人写成自己。本段为虚构测试文本。编号 11",
+   "visibility_label": "role_limited",
+   "module": "kb_front",
+   "allowed_roles": [
+    "front_desk"
+   ]
+  },
+  {
+   "doc_id": "doc-012",
+   "title": "社群活动排期规范",
+   "body": "社群活动排期规范仅对 community 岗位开放（虚构样例）：包含 4 条操作要点与 2 个常见错误，错误示例为把审批人写成自己。本段为虚构测试文本。编号 12",
+   "visibility_label": "role_limited",
+   "module": "kb_event",
+   "allowed_roles": [
+    "community_ops"
+   ]
+  },
+  {
+   "doc_id": "doc-013",
+   "title": "招商线索分配规则",
+   "body": "招商线索分配规则仅对 sales 岗位开放（虚构样例）：包含 4 条操作要点与 2 个常见错误，错误示例为把审批人写成自己。本段为虚构测试文本。编号 13",
+   "visibility_label": "role_limited",
+   "module": "kb_sales",
+   "allowed_roles": [
+    "sales_rep"
+   ]
+  },
+  {
+   "doc_id": "doc-014",
+   "title": "招商报价审批层级",
+   "body": "招商报价审批层级仅对 lead 岗位开放（虚构样例）：包含 4 条操作要点与 2 个常见错误，错误示例为把审批人写成自己。本段为虚构测试文本。编号 14",
+   "visibility_label": "role_limited",
+   "module": "kb_lead",
+   "allowed_roles": [
+    "sales_rep",
+    "sales_lead"
+   ]
+  },
+  {
+   "doc_id": "doc-015",
+   "title": "财务对账周期说明",
+   "body": "财务对账周期说明仅对 fin 岗位开放（虚构样例）：包含 4 条操作要点与 2 个常见错误，错误示例为把审批人写成自己。本段为虚构测试文本。编号 15",
+   "visibility_label": "role_limited",
+   "module": "kb_fin",
+   "allowed_roles": [
+    "finance"
+   ]
+  },
+  {
+   "doc_id": "doc-016",
+   "title": "财务发票开具流程",
+   "body": "财务发票开具流程仅对 fin 岗位开放（虚构样例）：包含 4 条操作要点与 2 个常见错误，错误示例为把审批人写成自己。本段为虚构测试文本。编号 16",
+   "visibility_label": "role_limited",
+   "module": "kb_front",
+   "allowed_roles": [
+    "finance"
+   ]
+  },
+  {
+   "doc_id": "doc-017",
+   "title": "招商主管周会材料模板",
+   "body": "招商主管周会材料模板仅对 lead 岗位开放（虚构样例）：包含 4 条操作要点与 2 个常见错误，错误示例为把审批人写成自己。本段为虚构测试文本。编号 17",
+   "visibility_label": "role_limited",
+   "module": "kb_event",
+   "allowed_roles": [
+    "sales_rep",
+    "sales_lead"
+   ]
+  },
+  {
+   "doc_id": "doc-018",
+   "title": "社群运营内容审核清单",
+   "body": "社群运营内容审核清单仅对 community 岗位开放（虚构样例）：包含 4 条操作要点与 2 个常见错误，错误示例为把审批人写成自己。本段为虚构测试文本。编号 18",
+   "visibility_label": "role_limited",
+   "module": "kb_sales",
+   "allowed_roles": [
+    "community_ops"
+   ]
+  },
+  {
+   "doc_id": "doc-019",
+   "title": "前台访客异常处置流程",
+   "body": "前台访客异常处置流程仅对 front 岗位开放（虚构样例）：包含 4 条操作要点与 2 个常见错误，错误示例为把审批人写成自己。本段为虚构测试文本。编号 19",
+   "visibility_label": "role_limited",
+   "module": "kb_lead",
+   "allowed_roles": [
+    "front_desk"
+   ]
+  },
+  {
+   "doc_id": "doc-020",
+   "title": "财务预算调整申请路径",
+   "body": "财务预算调整申请路径仅对 fin 岗位开放（虚构样例）：包含 4 条操作要点与 2 个常见错误，错误示例为把审批人写成自己。本段为虚构测试文本。编号 20",
+   "visibility_label": "role_limited",
+   "module": "kb_fin",
+   "allowed_roles": [
+    "finance"
+   ]
+  },
+  {
+   "doc_id": "doc-021",
+   "title": "招商合同用印流程",
+   "body": "招商合同用印流程仅对 sales 岗位开放（虚构样例）：包含 4 条操作要点与 2 个常见错误，错误示例为把审批人写成自己。本段为虚构测试文本。编号 21",
+   "visibility_label": "role_limited",
+   "module": "kb_front",
+   "allowed_roles": [
+    "sales_rep"
+   ]
+  },
+  {
+   "doc_id": "doc-022",
+   "title": "社群运营月度目标口径",
+   "body": "社群运营月度目标口径仅对 community 岗位开放（虚构样例）：包含 4 条操作要点与 2 个常见错误，错误示例为把审批人写成自己。本段为虚构测试文本。编号 22",
+   "visibility_label": "role_limited",
+   "module": "kb_event",
+   "allowed_roles": [
+    "community_ops"
+   ]
+  },
+  {
+   "doc_id": "doc-023",
+   "title": "杭州馆场地平面图",
+   "body": "杭州馆场地平面图（虚构样例）：只描述单一馆的场地与档期，共 3 个区段与 2 个禁停时段。本段为虚构测试文本。编号 23",
+   "visibility_label": "site_limited",
+   "module": "kb_core",
+   "site_id": "site-hz-01"
+  },
+  {
+   "doc_id": "doc-024",
+   "title": "上海馆场地平面图",
+   "body": "上海馆场地平面图（虚构样例）：只描述单一馆的场地与档期，共 3 个区段与 2 个禁停时段。本段为虚构测试文本。编号 24",
+   "visibility_label": "site_limited",
+   "module": "kb_core",
+   "site_id": "site-hz-01"
+  },
+  {
+   "doc_id": "doc-025",
+   "title": "杭州馆合作渠道清单",
+   "body": "杭州馆合作渠道清单（虚构样例）：只描述单一馆的场地与档期，共 3 个区段与 2 个禁停时段。本段为虚构测试文本。编号 25",
+   "visibility_label": "site_limited",
+   "module": "kb_core",
+   "site_id": "site-hz-01"
+  },
+  {
+   "doc_id": "doc-026",
+   "title": "上海馆合作渠道清单",
+   "body": "上海馆合作渠道清单（虚构样例）：只描述单一馆的场地与档期，共 3 个区段与 2 个禁停时段。本段为虚构测试文本。编号 26",
+   "visibility_label": "site_limited",
+   "module": "kb_core",
+   "site_id": "site-hz-01"
+  },
+  {
+   "doc_id": "doc-027",
+   "title": "杭州馆活动场地档期",
+   "body": "杭州馆活动场地档期（虚构样例）：只描述单一馆的场地与档期，共 3 个区段与 2 个禁停时段。本段为虚构测试文本。编号 27",
+   "visibility_label": "site_limited",
+   "module": "kb_core",
+   "site_id": "site-hz-01"
+  },
+  {
+   "doc_id": "doc-028",
+   "title": "上海馆活动场地档期",
+   "body": "上海馆活动场地档期（虚构样例）：只描述单一馆的场地与档期，共 3 个区段与 2 个禁停时段。本段为虚构测试文本。编号 28",
+   "visibility_label": "site_limited",
+   "module": "kb_core",
+   "site_id": "site-sh-02"
+  },
+  {
+   "doc_id": "doc-029",
+   "title": "杭州馆停车券额度",
+   "body": "杭州馆停车券额度（虚构样例）：只描述单一馆的场地与档期，共 3 个区段与 2 个禁停时段。本段为虚构测试文本。编号 29",
+   "visibility_label": "site_limited",
+   "module": "kb_core",
+   "site_id": "site-sh-02"
+  },
+  {
+   "doc_id": "doc-030",
+   "title": "上海馆停车券额度",
+   "body": "上海馆停车券额度（虚构样例）：只描述单一馆的场地与档期，共 3 个区段与 2 个禁停时段。本段为虚构测试文本。编号 30",
+   "visibility_label": "site_limited",
+   "module": "kb_core",
+   "site_id": "site-sh-02"
+  },
+  {
+   "doc_id": "doc-031",
+   "title": "杭州馆会员走访路线",
+   "body": "杭州馆会员走访路线（虚构样例）：只描述单一馆的场地与档期，共 3 个区段与 2 个禁停时段。本段为虚构测试文本。编号 31",
+   "visibility_label": "site_limited",
+   "module": "kb_core",
+   "site_id": "site-sh-02"
+  },
+  {
+   "doc_id": "doc-032",
+   "title": "上海馆会员走访路线",
+   "body": "上海馆会员走访路线（虚构样例）：只描述单一馆的场地与档期，共 3 个区段与 2 个禁停时段。本段为虚构测试文本。编号 32",
+   "visibility_label": "site_limited",
+   "module": "kb_core",
+   "site_id": "site-sh-02"
+  },
+  {
+   "doc_id": "doc-033",
+   "title": "某会员企业续约谈判要点",
+   "body": "某会员企业续约谈判要点（虚构样例）：仅指定人员可读，含 3 个未公开数值与 1 条待确认事项，数值均为虚构。编号 33",
+   "visibility_label": "confidential",
+   "module": "kb_lead",
+   "allowed_subject_ids": [
+    "u-lead-04"
+   ]
+  },
+  {
+   "doc_id": "doc-034",
+   "title": "年度预算未公开草稿",
+   "body": "年度预算未公开草稿（虚构样例）：仅指定人员可读，含 3 个未公开数值与 1 条待确认事项，数值均为虚构。编号 34",
+   "visibility_label": "confidential",
+   "module": "kb_fin",
+   "allowed_subject_ids": [
+    "u-fin-05"
+   ]
+  },
+  {
+   "doc_id": "doc-035",
+   "title": "高管人事调整方案",
+   "body": "高管人事调整方案（虚构样例）：仅指定人员可读，含 3 个未公开数值与 1 条待确认事项，数值均为虚构。编号 35",
+   "visibility_label": "confidential",
+   "module": "kb_lead",
+   "allowed_subject_ids": [
+    "u-lead-04"
+   ]
+  },
+  {
+   "doc_id": "doc-036",
+   "title": "三家会员企业欠款清单",
+   "body": "三家会员企业欠款清单（虚构样例）：仅指定人员可读，含 3 个未公开数值与 1 条待确认事项，数值均为虚构。编号 36",
+   "visibility_label": "confidential",
+   "module": "kb_fin",
+   "allowed_subject_ids": [
+    "u-fin-05"
+   ]
+  },
+  {
+   "doc_id": "doc-037",
+   "title": "并购意向内部备忘",
+   "body": "并购意向内部备忘（虚构样例）：仅指定人员可读，含 3 个未公开数值与 1 条待确认事项，数值均为虚构。编号 37",
+   "visibility_label": "confidential",
+   "module": "kb_lead",
+   "allowed_subject_ids": [
+    "u-lead-04"
+   ]
+  },
+  {
+   "doc_id": "doc-038",
+   "title": "供应商比价底价表",
+   "body": "供应商比价底价表（虚构样例）：仅指定人员可读，含 3 个未公开数值与 1 条待确认事项，数值均为虚构。编号 38",
+   "visibility_label": "confidential",
+   "module": "kb_fin",
+   "allowed_subject_ids": [
+    "u-fin-05"
+   ]
+  },
+  {
+   "doc_id": "doc-039",
+   "title": "股东分红测算表",
+   "body": "股东分红测算表（虚构样例）：仅指定人员可读，含 3 个未公开数值与 1 条待确认事项，数值均为虚构。编号 39",
+   "visibility_label": "confidential",
+   "module": "kb_lead",
+   "allowed_subject_ids": [
+    "u-fin-05"
+   ]
+  },
+  {
+   "doc_id": "doc-040",
+   "title": "区域扩张选址评估",
+   "body": "区域扩张选址评估（虚构样例）：仅指定人员可读，含 3 个未公开数值与 1 条待确认事项，数值均为虚构。编号 40",
+   "visibility_label": "confidential",
+   "module": "kb_fin",
+   "allowed_subject_ids": [
+    "u-lead-04"
+   ]
+  }
+ ]
+}
