@@ -1,5 +1,5 @@
 {
-  "collected_at": "2026-11-22T12:42:03+00:00",
+  "collected_at": "2026-11-22T12:57:23+00:00",
   "python": "3.11.9",
   "test_files": 5,
   "test_cases": 61,
@@ -19,8 +19,8 @@
     "sites": 2
   },
   "pytest_exit": 0,
-  "pytest_last_line": "61 passed in 0.40s",
-  "pytest_stdout_sha256": "6e55b890a91be2ceb3fd973056365ad03dc6e375b3d30967be19aef5fe98023a",
+  "pytest_last_line": "61 passed in 0.41s",
+  "pytest_stdout_sha256": "e3dfbf253b5241ca5500348baa56a7b778105e93d41bc2591a41a37e0772a300",
   "leak_questions": 100,
   "leak_principals": 5,
   "leak_checks": 11100,
@@ -33,5 +33,5 @@
     "hits": [],
     "hit_count": 0
   },
-  "tree_sha256": "7de5ceb027a4cf1a7c30b2e145687dc55846c05e3cdccb85078659fc264a8e2c"
+  "tree_sha256": "240f663e5e881acc0a60fbc4665808c5f16914e3b059cb94c742bcef56bbae40"
 }
