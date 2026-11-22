@@ -99,7 +99,7 @@ cat reports/leak_test_report.md
 - 测试文件 `5` 个、用例 `61` 个；包内 `10` 个 `.py`、有效代码行 `608`；测试有效代码行 `241`
 - 夹具：角色 `5`、知识 `40`（`all_staff` 10 / `role_limited` 12 / `site_limited` 10 / `confidential` 8）、问题 `100`、馆 `2`
 - 泄露测试：断言 `11100` 次、命中 `0`、通过率 `1.0`、正控引用 `1008` 次、被判丢弃片段累计 `1992` 次
-- 密钥扫描：5 组模式（`cph_` / `gho_` / `github_pat_` / `sk-` / `AKIA`）全目录扫描，命中 `0`
+- 密钥扫描：5 组上游令牌前缀模式（平台会话令牌、GitHub OAuth、GitHub PAT、模型厂商密钥、云厂商访问键）全目录扫描，命中 `0`；模式串由 `scripts/collect_metrics.py` 内部拼接生成，README 与代码均不留字面量
 - 目录内容摘要 `tree_sha256 = f552d8c520e2a8b5618b609c65456d44da3b5f7cebb5ad6d533dafeb74745b19`（不含 `metrics.json` 与 `.venv`）
 
 ## 5. 与真实系统的对接点（mock 边界）

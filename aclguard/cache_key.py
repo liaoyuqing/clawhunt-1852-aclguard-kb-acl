@@ -17,8 +17,7 @@ def _sha16(text: str) -> str:
 
 def role_fingerprint(principal: Principal) -> str:
     """角色指纹：排序后的角色集合做 sha256，取前 16 位十六进制。"""
-    joined = "|".join(sorted(principal.roles))
-    return _sha16(joined)
+    return _sha16("|".join(sorted(principal.roles)))
 
 
 def site_fingerprint(principal: Principal) -> str:
@@ -27,36 +26,35 @@ def site_fingerprint(principal: Principal) -> str:
 
 
 def cache_key(kind: str, principal: Principal, query: str) -> str:
-    """构造包含角色指纹与 site 指纹的缓存键。"""
+    """构造同时包含角色指纹与 site 指纹的缓存键。"""
     return kind + ":" + role_fingerprint(principal) + ":" + site_fingerprint(principal) + ":" + _sha16(query)
 
 
 class TTLCache:
-    """极简 TTL 缓存；不同指纹天然落在不同键上。"""
+    """极简 TTL 缓存；不同指纹天然落在不同键上，跨角色读取必然 miss。"""
 
     def __init__(self, ttl_seconds: float = 300.0, max_entries: int = 512) -> None:
         self.ttl_seconds = float(ttl_seconds)
         self.max_entries = int(max_entries)
         self._data: dict = {}
-
-    def _purge(self, now: float) -> None:
-        expired = [k for k, (_, exp) in self._data.items() if exp <= now]
-        for k in expired:
-            self._data.pop(k, None)
+        self.hits = 0
+        self.misses = 0
 
     def get(self, key: str) -> Any:
         item = self._data.get(key)
         if item is None:
+            self.misses += 1
             return None
         value, expires = item
         if expires <= time.monotonic():
             self._data.pop(key, None)
+            self.misses += 1
             return None
+        self.hits += 1
         return value
 
     def set(self, key: str, value: Any, ttl_seconds: float | None = None) -> None:
         now = time.monotonic()
-        self._purge(now)
         ttl = self.ttl_seconds if ttl_seconds is None else float(ttl_seconds)
         self._data[key] = (value, now + ttl)
         while len(self._data) > self.max_entries:
