@@ -72,8 +72,10 @@ def fixture_counts() -> dict:
     }
 
 
-# 不参与扫描与摘要的目录：虚拟环境、字节码缓存、pytest 缓存（后者每次跑测试都会变）
-SKIP_DIRS = (".venv/", ".pytest_cache/", "__pycache__/")
+# 不参与扫描与摘要的目录：虚拟环境、字节码缓存、pytest 缓存（后者每次跑测试都会变）、
+# 以及 .git —— 同一份内容在提交目录与干净 clone 里的 .git 完全不同，
+# 把它算进 tree_sha256 会让两侧摘要必然对不上，摘要就失去可比性。
+SKIP_DIRS = (".git/", ".venv/", ".pytest_cache/", "__pycache__/")
 
 
 def _skipped(rel: str) -> bool:
@@ -114,6 +116,8 @@ def leak_metrics() -> dict:
         "leak_questions": run.questions,
         "leak_principals": run.principals,
         "leak_checks": run.checks,
+        "leak_skipped_by_acl": run.skipped_by_acl,
+        "leak_cells_total": run.cells_total,
         "leak_hits": run.hits,
         "leak_pass_rate": run.pass_rate,
         "leak_positive_citations": run.positive_citations,
@@ -180,8 +184,9 @@ def metrics_block(payload: dict) -> str:
         "- 夹具：角色 `%d`、知识 `%d`（`all_staff` %d / `role_limited` %d / `site_limited` %d / `confidential` %d）、问题 `%d`、馆 `%d`" % (
             fx["roles"], fx["entries"], labels.get("all_staff", 0), labels.get("role_limited", 0),
             labels.get("site_limited", 0), labels.get("confidential", 0), fx["questions"], fx["sites"]),
-        "- 泄露测试：断言 `%d` 次、命中 `%d`、通过率 `%s`、正控引用 `%d` 次、被判丢弃片段累计 `%d` 次" % (
-            payload["leak_checks"], payload["leak_hits"], payload["leak_pass_rate"],
+        "- 泄露测试：实际扫描断言 `%d` 次（候选格 `%d`，其中空转 `%d` 格不计入分母）、命中 `%d`、通过率 `%s`、正控引用 `%d` 次、被判丢弃片段累计 `%d` 次" % (
+            payload["leak_checks"], payload["leak_cells_total"], payload["leak_skipped_by_acl"],
+            payload["leak_hits"], payload["leak_pass_rate"],
             payload["leak_positive_citations"], payload["leak_dropped_total"]),
         "- 折叠标记 `%s` 在角色被收回的渲染结果中出现 `%d` 次（折叠引用 `%d` 条），角色未收回时 `%d` 次" % (
             payload["fold_marker"], payload["fold_marker_count"], payload["fold_citations"],

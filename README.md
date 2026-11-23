@@ -9,7 +9,8 @@
 | `aclguard/models.py` | `Principal` / `KnowledgeEntry` / `Chunk` / `Decision` / `DroppedChunk` / `SecondCheckResult` / `CitationRef` |
 | `aclguard/visibility.py` | `decide(entry, principal)`：四类 `visibility_label` 的判定与稳定 `reason` 枚举 |
 | `aclguard/second_check.py` | `filter_chunks(...)`：交给模型前逐片段重判，丢弃并记 `kb_acl_dropped` |
-| `aclguard/cache_key.py` | `role_fingerprint` / `site_fingerprint` / `cache_key` / `TTLCache` |
+| `aclguard/audit.py` | 统一审计出口：单一 logger 名，把 `doc_id`/`reason`/`role_fp`/`site_fp`/`request_id` 写进**日志行文本**，可直接 grep |
+| `aclguard/cache_key.py` | `role_fingerprint` / `site_fingerprint` / `subject_fingerprint` / `scope_fingerprint` / `cache_key` / `TTLCache` |
 | `aclguard/history.py` | `render_history(...)`：角色被收回后把历史引用折叠为「该内容已无权查看」 |
 | `aclguard/assistant.py` | `ask(...)`：检索 → 二次校验 → 模型请求体 → 答案与引用 → 缓存 |
 | `aclguard/kb_stub.py` | 最坏情形的知识库桩：**完全不做 ACL**，按关键词整条返回 |
@@ -20,8 +21,9 @@
 | `fixtures/questions_100.json` | 100 个虚构问题 |
 | `AC2_LEAK_TEST_REPORT.md` | **AC2 主证据**：100 问题 × 5 角色的泄露测试报告（指标表、5 行分角色表、判据、复现命令） |
 | `EVIDENCE.md` | 验收证据索引：AC1–AC4 + 判定矩阵的命令、可观察结果、证据路径与断言行号 |
-| `reports/pytest_output.txt` | 全量 `pytest -q` 的真实重定向输出（含末行 `61 passed` 与 `EXIT=0`） |
-| `tests/` | 5 个测试文件 |
+| `reports/pytest_output.txt` | 全量 `pytest -q` 的真实重定向输出（含末行 `78 passed` 与 `EXIT=0`） |
+| `FIX_REVIEW.md` | 返修自证：9 处缺口的断言位置、变异自证表（改坏实现后哪条用例变红）与旧断言变更说明 |
+| `tests/` | 6 个测试文件 |
 | `scripts/collect_metrics.py` | 现算全部交付数字，写 `metrics.json` |
 | `scripts/selfcheck.sh` | 复制到临时目录后跑全套（等价干净 clone） |
 | `reports/leak_test_report.md` | 泄露测试报告（脚本生成） |
@@ -36,7 +38,7 @@ python -m venv .venv
 # 跑全部测试（Windows Git Bash 下同样可用）
 cd E:/AI接单/Clawhunt-2/delivery/deliverables/1852
 PYTHONIOENCODING=utf-8 .venv/Scripts/python.exe -m pytest -q
-# 预期末行：61 passed in 0.XXs（耗时随机器浮动，用例数固定 61）
+# 预期末行：78 passed in 0.XXs（耗时随机器浮动，用例数固定 78）
 
 # 现算指标（会重写 metrics.json 与 reports/leak_test_report.md）
 PYTHONIOENCODING=utf-8 .venv/Scripts/python.exe scripts/collect_metrics.py
@@ -65,7 +67,8 @@ cat reports/leak_test_report.md
 ```
 
 - 100 个问题 × 5 个角色 = 500 次问答，每次对全部 40 条逐条判定「本次应可见 / 不应可见」，对不应可见的条目检查助手侧产物（回答文本、助手轮次消息与引用、交给模型的 `context`）是否出现其标题或正文前 40 字。
-- 实测断言次数 `11100`、命中 `0`、通过率 `1.0`；正控 `positive_citations = 1008 > 0`，排除「全部拒答」造成的假通过。
+- 实测：候选格 `11100`（100 问题 × 5 角色 × 40 条），其中**实际扫描断言 `1992` 次**、空转 `9108` 格；命中 `0`、通过率 `1.0`。分母只算「本轮确实被检索到并被拦下」的格，空转格扫描恒为 0，撑大分母会掩盖检测器是否真的有效。
+- 正控 `positive_citations = 1008 > 0`，排除「全部拒答」造成的假通过；检测器另有独立正控（把标题真的塞进产物，`scan_text` 必须命中）。
 - 说明：用户自己的提问里本来就会带着被问条目的标题，因此泄漏面只统计助手侧产物与模型 `context`，不含 `question` 字段。
 - **完整报告见根目录 [`AC2_LEAK_TEST_REPORT.md`](AC2_LEAK_TEST_REPORT.md)**（指标表、分角色统计、判据与复现命令）；全量回归的逐字输出存档于 [`reports/pytest_output.txt`](reports/pytest_output.txt)，逐条证据索引见 [`EVIDENCE.md`](EVIDENCE.md)。
 
@@ -78,6 +81,7 @@ cat reports/leak_test_report.md
 - 以「招商业务员」身份对 `doc-013`（`role_limited`，仅 `sales_rep`）提问并产生引用；随后用 `Principal.without_roles(["sales_rep"])` 模拟角色被收回。
 - `render_history(...)` 返回 `folded >= 1`，且引用项的 `title` 与 `snippet` 都被替换为「该内容已无权查看」；仅看助手侧文本也不含原 `title` 与 `body[:40]`。同一份历史在角色未收回时渲染，不含折叠标记 —— 说明折叠由**当前**权限决定，而不是写死。
 - 第二轮 `ask(...)` 的模型 `context` 同样不含该条目标题与正文前 40 字。
+- **接线已落在主链路上**：`ask(...)` 每次构造模型请求前都调用 `render_history(session.messages, principal)`，折叠结果进 `ModelRequest.history` 并随请求体发给模型（`aclguard/assistant.py:177`–`aclguard/assistant.py:183`）。把这一行短路成「不折叠」，`tests/test_repair_gaps.py::test_repair_history_folding_is_wired_into_model_request` 立刻变红 —— 见 [`FIX_REVIEW.md`](FIX_REVIEW.md) 的变异自证表。
 
 ### AC4 单元测试断言缓存键包含角色与 site 指纹
 
@@ -85,8 +89,9 @@ cat reports/leak_test_report.md
 .venv/Scripts/python.exe -m pytest -q tests/test_ac4_cache_key.py
 ```
 
-- `cache_key("qa", p, q)` 形如 `qa:{role_fp}:{site_fp}:{query_fp}`，断言两个指纹都在键里、键被 3 个冒号切成 4 段。
-- 5 个角色对同一问题的键两两不同；同角色换 `site_id` 键也不同。
+- `cache_key("qa", p, q)` 形如 `qa:{role_fp}:{site_fp}:{subject_fp}:{scope_fp}:{query_fp}`，断言四个指纹都在键里、键被 5 个冒号切成 6 段。
+- 向后不兼容（有意）：旧 4 段键制作的缓存条目升级后一律 miss，宁可冷启动也不复用可能越权的旧答案。
+- 5 个角色对同一问题的键两两不同；同角色换 `site_id`、换一个人（`subject_id` 变）、或 `data_scope` 收缩，键都不同。
 - 功能侧：A 角色写入的缓存，B 角色读取为 `None`（`misses == 2`），证明隔离不是只靠命名。
 
 ### 附加：可见性判定矩阵
@@ -95,20 +100,20 @@ cat reports/leak_test_report.md
 .venv/Scripts/python.exe -m pytest -q tests/test_visibility_matrix.py
 ```
 
-- 4 种 `label` × 5 个角色 × 2 个馆 = 40 例参数化，逐格断言 `visible` 与 `reason`（`label_all_staff` / `role_hit` / `role_miss` / `site_hit` / `site_miss` / `principal_allow` / `principal_deny` / `scope_miss` / `label_unknown`）。
+- 4 种 `label` × 5 个角色 × 2 个馆 = 40 个矩阵格，逐格断言 `visible` 与 `reason`（`label_all_staff` / `role_hit` / `role_miss` / `site_hit` / `site_miss` / `principal_allow` / `principal_deny` / `confidential_default_deny` / `scope_miss` / `label_unknown`）。夹具是 40 格，而 `pytest` 收集到 **51 条用例**（5 个参数化函数 × 10 组角色/馆 = 50 条，外加 1 条未知标签）—— 用例数与矩阵格数不是同一个数，`reports/ac_matrix.md` 已按此口径写清。
 
 ## 4. 实测数字（由 `scripts/collect_metrics.py` 现算并自动回填本节，见 `metrics.json`）
 
 <!-- METRICS:BEGIN -->
-- Python `3.11.9`；`pytest -q` 结果 `61 passed`，退出码 `0`（逐字末行与耗时见 `metrics.json`）
-- 测试文件 `5` 个、用例 `61` 个；包内 `10` 个 `.py`、有效代码行 `682`；测试有效代码行 `241`
+- Python `3.11.9`；`pytest -q` 结果 `78 passed`，退出码 `0`（逐字末行与耗时见 `metrics.json`）
+- 测试文件 `6` 个、用例 `78` 个；包内 `11` 个 `.py`、有效代码行 `836`；测试有效代码行 `585`
 - 夹具：角色 `5`、知识 `40`（`all_staff` 10 / `role_limited` 12 / `site_limited` 10 / `confidential` 8）、问题 `100`、馆 `2`
-- 泄露测试：断言 `11100` 次、命中 `0`、通过率 `1.0`、正控引用 `1008` 次、被判丢弃片段累计 `1992` 次
+- 泄露测试：实际扫描断言 `1992` 次（候选格 `11100`，其中空转 `9108` 格不计入分母）、命中 `0`、通过率 `1.0`、正控引用 `1008` 次、被判丢弃片段累计 `1992` 次
 - 折叠标记 `「该内容已无权查看」` 在角色被收回的渲染结果中出现 `3` 次（折叠引用 `1` 条），角色未收回时 `0` 次
 - 密钥扫描命中 `0` 条（模式组 `5` 个）
 <!-- METRICS:END -->
 
-- 目录内容摘要 `tree_sha256` 见 `metrics.json` 的同名字段（计算时排除 `metrics.json` 本身、`.venv`、`.pytest_cache` 与 `__pycache__`）。它随任何文件改动而变化，因此不在此处硬编码，避免正文与快照不一致。
+- 目录内容摘要 `tree_sha256` 见 `metrics.json` 的同名字段（计算时排除 `metrics.json` 本身、`.git`、`.venv`、`.pytest_cache` 与 `__pycache__`）。排除 `.git` 是必须的：同一份内容在提交目录与干净 clone 里的 `.git` 完全不同，把它算进去摘要必然对不上，跨副本比对就失去意义。它随任何文件改动而变化，因此不在此处硬编码，避免正文与快照不一致。
 - 密钥扫描模式：5 组上游令牌前缀（平台会话令牌、GitHub OAuth、GitHub PAT、模型厂商密钥、云厂商访问键）全目录扫描，命中 `0`；模式串由 `scripts/collect_metrics.py` 内部拼接生成，代码与文档中均不留字面量。
 
 ## 5. 与真实系统的对接点（mock 边界）

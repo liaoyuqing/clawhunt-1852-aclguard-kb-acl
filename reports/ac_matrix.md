@@ -15,9 +15,9 @@ PYTHONIOENCODING=utf-8 .venv/Scripts/python.exe scripts/collect_metrics.py
 | AC | 要求 | 测试文件 | 测试函数 | 证据文件 | 实测结论 |
 | --- | --- | --- | --- | --- | --- |
 | AC1 | 无权片段在交给模型前被丢弃，日志只记 doc_id | `tests/test_ac1_dropped_before_model.py` | `test_acl1_kb_stub_returns_forbidden_chunk_then_model_body_clean`、`test_acl1_filter_chunks_drops_every_label_combination` | `reports/ac_matrix.md`、`metrics.json` | 模型请求体不含被丢弃条目；`kb_acl_dropped` 记 1 条且 doc_id 正确；日志 record 全字段无正文 |
-| AC2 | 100 问题 x 5 角色的泄露测试 0 命中，且有正控 | `tests/test_ac2_leak_100.py` | `test_acl2_leak_suite_100_questions_zero_unauthorized_hits`、`test_acl2_report_written_with_zero_hits`、`test_acl2_fixture_shape_is_exactly_5_40_100` | `reports/leak_test_report.md`、`metrics.json` | 断言 11100 次，命中 0，正控引用 1008 次 |
+| AC2 | 100 问题 x 5 角色的泄露测试 0 命中，且有正控 | `tests/test_ac2_leak_100.py` | `test_acl2_leak_suite_100_questions_zero_unauthorized_hits`、`test_acl2_report_written_with_zero_hits`、`test_acl2_fixture_shape_is_exactly_5_40_100` | `AC2_LEAK_TEST_REPORT.md`（根目录）、`reports/leak_test_report.md`、`metrics.json` | 实际扫描断言 1992 次（候选格 11100，空转 9108 格不计入分母），命中 0，正控引用 1008 次 |
 | AC3 | 角色被收回后历史引用折叠为「该内容已无权查看」 | `tests/test_ac3_role_revoked.py` | `test_acl3_revoked_role_folds_history_citation`、`test_acl3_next_turn_model_request_excludes_revoked_citation` | `metrics.json`（`fold_marker_count`） | 折叠 1 条引用、标记出现 3 次；角色未收回时标记 0 次 |
-| AC4 | 缓存键必须含角色指纹与 site 指纹 | `tests/test_ac4_cache_key.py` | `test_acl4_cache_key_contains_role_and_site_fingerprint`、`test_acl4_different_role_and_site_never_share_key`、`test_acl4_cache_written_by_one_role_is_invisible_to_another` | `metrics.json` | 键 4 段、两指纹齐全；跨角色读缓存 miss |
+| AC4 | 缓存键必须含角色指纹与 site 指纹 | `tests/test_ac4_cache_key.py` | `test_acl4_cache_key_contains_role_and_site_fingerprint`、`test_acl4_different_role_and_site_never_share_key`、`test_acl4_cache_written_by_one_role_is_invisible_to_another` | `metrics.json` | 键 6 段（role/site/subject/scope/query 全参与）、指纹齐全；跨角色读缓存 miss |
 | 附加 | 4 种 label x 5 角色 x 2 个馆 判定矩阵 | `tests/test_visibility_matrix.py` | `test_all_staff_visible_for_every_role_and_site` 等 6 个参数化函数 | `reports/ac_matrix.md` 末节 | 40 例矩阵逐格断言 `visible` 与 `reason` |
 
 ## AC1 无权片段在交给模型前丢弃
@@ -39,11 +39,13 @@ PYTHONIOENCODING=utf-8 .venv/Scripts/python.exe scripts/collect_metrics.py
 cat reports/leak_test_report.md
 ```
 
-1. 100 个问题 x 5 个角色 = 500 次问答，每次问答后对全部 40 条逐条判断「本轮该角色应可见 / 不应可见」。
-2. 对不应可见的条目，在其标题与正文前 40 字两个判据上扫描助手侧产物：回答文本、助手轮次消息与引用、模型请求体的 `context`。
-3. 实测：断言 `11100` 次、命中 `0`、通过率 `1.0`；分角色断言次数与授权引用次数见 `reports/leak_test_report.md` 的统计表。
-4. 正控：`positive_citations = 1008 > 0`，报告另附 1 条正控样本（`q-001` / `front` / `doc-001`），证明不是「全部拒答」造成的假通过。
-5. 说明：用户自己的提问里本就带着被问条目，因此泄漏面不含 `question` 字段，只统计助手侧产物。
+1. 100 个问题 x 5 个角色 = 500 次问答；每次问答把全部 40 条与该角色可见集合比对，得到候选格 11100 个。
+2. 候选格中只有「本轮确实被检索到、并被二次校验拦下」的格才计入分母 `checks`；本轮没被检索到的格扫描恒为 0，属空转，单列 `skipped_by_acl`，不撑大分母。
+3. 对计入的条目，在其标题与正文前 40 字两个判据上扫描助手侧产物：回答文本、助手轮次消息与引用、模型请求体的 `context` 与折叠后 `history`。
+4. 实测：候选格 `11100`、实际扫描断言 `1992` 次、空转 `9108` 格、命中 `0`、通过率 `1.0`；分角色断言次数与授权引用次数见 `reports/leak_test_report.md` 的统计表。
+5. 正控：`positive_citations = 1008 > 0`，报告另附 1 条正控样本（`q-001` / `front` / `doc-001`），证明不是「全部拒答」造成的假通过。
+6. 检测器正控：`tests/test_repair_gaps.py::test_repair_detector_positive_control_catches_real_leak` 把标题与正文前 40 字真的塞进产物，`scan_text` 必须返回 `True` —— 证明检测器不是恒 `False`。
+7. 说明：用户自己的提问里本就带着被问条目，因此泄漏面不含 `question` 字段，只统计助手侧产物。
 
 ## AC3 角色收回后折叠历史引用
 
@@ -54,7 +56,7 @@ cat reports/leak_test_report.md
 1. 以「招商业务员」身份对 `doc-013`（`role_limited`，仅 `sales_rep` 可见）提问，产生引用快照并写入会话历史。
 2. `Principal.without_roles(["sales_rep"])` 模拟角色在中途被收回。
 3. `history.render_history(messages, revoked)` 用**当前** principal 重新判定每条引用：不可见者 `title` 与 `snippet` 双双替换为 `「该内容已无权查看」`，消息正文里出现的标题与片段也一并替换。
-4. 断言：折叠数 ≥ 1；渲染文本含占位符；助手侧文本不含原 title 与 `body[:40]`；同一份历史在角色未收回时渲染 **不含**占位符（证明折叠由当前权限决定，不是写死）。
+4. 断言：折叠数 ≥ 1；渲染文本含折叠标记 `「该内容已无权查看」`；助手侧文本不含原 title 与 `body[:40]`；同一份历史在角色未收回时渲染 **不含** 折叠标记（证明折叠由当前权限决定，不是写死）。除此之外，`ask(...)` 已把 `render_history` 的产物接进模型请求体的 `history` 字段（`aclguard/assistant.py:177`–`aclguard/assistant.py:183`），不再只是「存在一个没被调用的函数」。
 5. 第二轮 `ask(...)` 的模型 `context` 同样不含该条目标题与正文前 40 字；`visible_citations_only` 也不再返回它。
 6. `metrics.json` 里 `fold_marker_count = 3`、`fold_citations = 1`，而 `fold_marker_count_when_role_kept = 0`，对照明确。
 
@@ -64,9 +66,10 @@ cat reports/leak_test_report.md
 .venv/Scripts/python.exe -m pytest -q tests/test_ac4_cache_key.py
 ```
 
-1. `cache_key(kind, principal, query)` = `kind:role_fp:site_fp:query_fp`，四段三段冒号；`role_fp = sha256("|".join(sorted(roles)))[:16]`，`site_fp = sha256(site_id)[:16]`。
-2. 断言两个指纹都出现在键里；5 个角色对同一问题两两不等；同角色换 `site_id` 键不等；同输入重复计算稳定。
-3. 功能断言：`TTLCache` 里 A 角色写入后，B 角色读为 `None`（`misses == 2`），证明隔离不只靠命名。
+1. `cache_key(kind, principal, query)` = `kind:role_fp:site_fp:subject_fp:scope_fp:query_fp`，六段五个冒号；`role_fp = sha256("|".join(sorted(roles)))[:16]`，`site_fp = sha256(site_id)[:16]`，`subject_fp = sha256(subject_id)[:16]`，`scope_fp = sha256("|".join(sorted(data_scope)))[:16]`。
+2. 断言四个指纹都出现在键里；5 个角色对同一问题两两不等；同角色换 `site_id` 键不等；同角色换一个人（`subject_id` 变）键不等；同一人 `data_scope` 收缩后键不等；同输入重复计算稳定。
+3. 功能断言：`TTLCache` 里 A 角色写入后，B 角色读为 `None`（`misses == 2`）；同角色他人与 scope 收缩后同样读不到（见 `tests/test_repair_gaps.py`），证明隔离不只靠命名。
+4. 向后不兼容（有意）：旧键为 4 段 `kind:role_fp:site_fp:query_fp`，升级后旧缓存条目一律按 miss 处理 —— 宁可冷启动也不复用可能越权的旧答案。
 
 ## 判定矩阵
 
@@ -74,7 +77,7 @@ cat reports/leak_test_report.md
 .venv/Scripts/python.exe -m pytest -q tests/test_visibility_matrix.py
 ```
 
-`test_visibility_matrix.py` 用 5 个角色 x 2 个馆 = 10 组参数，覆盖 6 个判定函数（`all_staff`、`role_limited`、`site_limited`、`confidential`、`data_scope` 越界、未知标签），共 40 例。`reason` 取值集合为 `label_all_staff` / `role_hit` / `role_miss` / `site_hit` / `site_miss` / `principal_allow` / `principal_deny` / `confidential_default_deny` / `scope_miss` / `label_unknown`。
+`test_visibility_matrix.py` 覆盖 4 种 `label` x 5 个角色 x 2 个馆，共 **40 例**矩阵格（判定函数 5 个参数化：`all_staff`、`role_limited`、`site_limited`、`confidential`、`data_scope` 越界，外加 1 例未知标签）。`pytest` 对这些参数化函数实际收集到 51 条用例（5 个函数 x 10 组角色/馆 = 50 条，另加 1 条未知标签）—— 用例数与矩阵格数是两个口径，此处分别写明，不混用。`reason` 取值集合为 `label_all_staff` / `role_hit` / `role_miss` / `site_hit` / `site_miss` / `principal_allow` / `principal_deny` / `confidential_default_deny` / `scope_miss` / `label_unknown`。
 
 ## 密钥扫描
 

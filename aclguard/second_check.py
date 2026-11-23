@@ -3,12 +3,13 @@ from __future__ import annotations
 
 import logging
 
+from .audit import EVENT_DROPPED, format_audit_line, get_audit_logger
 from .cache_key import role_fingerprint, site_fingerprint
 from .models import DroppedChunk, Principal, SecondCheckResult
 from .visibility import decide
 
-EVENT_DROPPED = "kb_acl_dropped"
-DEFAULT_LOGGER_NAME = "aclguard.second_check"
+# 保留旧常量名，供既有测试与外部调用方引用；值来自统一审计模块。
+DEFAULT_LOGGER_NAME = "aclguard.audit"
 
 # 模型上下文里每条片段注入的正文上限（只放行可见片段，此处仅控制体积）
 MODEL_TEXT_LIMIT = 200
@@ -20,7 +21,7 @@ def filter_chunks(chunks, principal: Principal, logger=None, request_id: str = "
     日志只写 doc_id / reason / matched_by / 标签 / 指纹 / request_id，
     绝不写标题或正文，避免审计日志本身变成泄露面。
     """
-    log = logger if logger is not None else logging.getLogger(DEFAULT_LOGGER_NAME)
+    log = get_audit_logger(logger)
     role_fp = role_fingerprint(principal)
     site_fp = site_fingerprint(principal)
     result = SecondCheckResult()
@@ -31,17 +32,22 @@ def filter_chunks(chunks, principal: Principal, logger=None, request_id: str = "
             continue
         dropped = DroppedChunk(doc_id=chunk.doc_id, reason=decision.reason, matched_by=decision.matched_by)
         result.dropped.append(dropped)
+        fields = {
+            "doc_id": dropped.doc_id,
+            "reason": dropped.reason,
+            "role_fp": role_fp,
+            "site_fp": site_fp,
+            "request_id": request_id,
+        }
+        # 消息文本本身带全部关键字段：默认 handler 只渲染 getMessage()，
+        # 若只塞 extra，运维 grep 日志时一条都检索不到。
         log.info(
-            EVENT_DROPPED,
+            format_audit_line(EVENT_DROPPED, fields),
             extra={
                 "event": EVENT_DROPPED,
-                "doc_id": dropped.doc_id,
-                "reason": dropped.reason,
                 "matched_by": dropped.matched_by,
                 "visibility_label": getattr(chunk, "visibility_label", ""),
-                "role_fp": role_fp,
-                "site_fp": site_fp,
-                "request_id": request_id,
+                **fields,
             },
         )
     return result

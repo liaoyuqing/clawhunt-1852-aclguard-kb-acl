@@ -12,7 +12,9 @@ def test_acl4_cache_key_contains_role_and_site_fingerprint():
     assert role_fingerprint(front) in key
     assert site_fingerprint(front) in key
     assert key.startswith("qa:")
-    assert key.count(":") == 3
+    # 键形状 qa:role_fp:site_fp:subject_fp:scope_fp:query_fp —— 5 个冒号切 6 段。
+    # （旧形状 4 段/3 冒号不含 subject 与 scope，同角色他人或 scope 收缩后会误命中。）
+    assert key.count(":") == 5
 
 
 def test_acl4_different_role_and_site_never_share_key():

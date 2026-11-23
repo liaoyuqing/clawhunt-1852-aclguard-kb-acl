@@ -10,7 +10,7 @@ from typing import Any, Mapping, Tuple
 # 四种可见性标签，取值为封闭集合
 VISIBILITY_LABELS = ("all_staff", "role_limited", "site_limited", "confidential")
 
-# 历史折叠占位符
+# 历史折叠标记：不可见引用在渲染历史时被替换成这一段文字
 FOLDED_TEXT = "「该内容已无权查看」"
 
 # 判定理由枚举（reason 的稳定取值）
@@ -92,7 +92,9 @@ class CitationRef:
     doc_id: str
     title: str
     snippet: str = ""
-    visibility_label: str = "all_staff"
+    # 默认空串而不是 all_staff：缺失标签的引用必须落到 label_unknown 被拒绝（fail closed），
+    # 否则旧快照缺字段时会默认放行，等于给历史消息开后门。
+    visibility_label: str = ""
     module: str = "kb_core"
     allowed_roles: Tuple[str, ...] = ()
     site_id: Any = None
@@ -104,7 +106,7 @@ class CitationRef:
             doc_id=raw["doc_id"],
             title=raw.get("title", ""),
             snippet=raw.get("snippet", ""),
-            visibility_label=raw.get("visibility_label", "all_staff"),
+            visibility_label=raw.get("visibility_label", ""),
             module=raw.get("module", "kb_core"),
             allowed_roles=tuple(raw.get("allowed_roles") or ()),
             site_id=raw.get("site_id"),

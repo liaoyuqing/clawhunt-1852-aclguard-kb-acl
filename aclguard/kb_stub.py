@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Iterable, List, Tuple
+from typing import Dict, Iterable, List, Tuple
 
 from .models import Chunk, KnowledgeEntry, Principal
 
@@ -21,6 +21,10 @@ class LeakyKnowledgeBase:
     def __init__(self, entries: Iterable[KnowledgeEntry]) -> None:
         self._entries = list(entries)
         self.calls = 0
+
+    def entry_map(self) -> Dict[str, KnowledgeEntry]:
+        """当前知识库的 doc_id -> 条目快照，供缓存命中时按现行密级重判。"""
+        return {entry.doc_id: entry for entry in self._entries}
 
     def search(self, question: str, limit: int = 6) -> Tuple[Chunk, ...]:
         self.calls += 1
