@@ -48,7 +48,7 @@
 cat reports/leak_test_report.md
 ```
 
-实测输出：`3 passed in 0.27s`，退出码 `0`。全量回归见根目录 `reports/pytest_output.txt`（`78 passed`，`EXIT=0`）。
+实测输出：`3 passed in 0.31s`，退出码 `0`（用例数固定 3，耗时随机器浮动）。全量回归见根目录 `reports/pytest_output.txt`（`78 passed`，`EXIT=0`）。
 
 ## 5. 统计口径说明
 
