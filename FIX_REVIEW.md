@@ -26,13 +26,13 @@
 
 | # | 变异内容 | 实测结果 |
 | --- | --- | --- |
-| M1 | `assistant.py` 里把折叠短路成 `history, folded_count = [], 0` | `1 failed, 18 passed`，退出码 1；红：`test_repair_history_folding_is_wired_into_model_request` |
-| M2 | `leak.py` 的 `scan_text` 开头加 `return False`（检测器恒不命中） | `1 failed, 19 passed`，退出码 1；红：`test_repair_detector_positive_control_catches_real_leak` |
-| M3 | `assistant.py` 缓存命中处跳过重判（`revoked = []`） | `1 failed, 16 passed`，退出码 1；红：`test_repair_cache_hit_rechecks_and_does_not_serve_reclassified_entry` |
-| M4 | `cache_key.py` 键退回 4 段（去掉 subject/scope） | `3 failed, 17 passed`，退出码 1；红：`test_repair_cache_key_covers_subject_and_scope`、`test_repair_cache_does_not_leak_across_subject_or_scope`、`test_ac4_cache_key.py::test_acl4_cache_key_contains_role_and_site_fingerprint` |
-| M5 | `collect_metrics.py` 的 `SKIP_DIRS` 去掉 `.git/` | `1 failed, 16 passed`，退出码 1；红：`test_repair_tree_digest_ignores_git_directory` |
+| M1 | `assistant.py` 里把折叠短路成 `history, folded_count = [], 0` | `1 failed, 77 passed`，退出码 1；红：`test_repair_history_folding_is_wired_into_model_request` |
+| M2 | `leak.py` 的 `scan_text` 开头加 `return False`（检测器恒不命中） | `1 failed, 77 passed`，退出码 1；红：`test_repair_detector_positive_control_catches_real_leak` |
+| M3 | `assistant.py` 缓存命中处跳过重判（`revoked = []`） | `1 failed, 77 passed`，退出码 1；红：`test_repair_cache_hit_rechecks_and_does_not_serve_reclassified_entry` |
+| M4 | `cache_key.py` 键退回 4 段（去掉 subject/scope） | `3 failed, 75 passed`，退出码 1；红：`test_repair_cache_key_covers_subject_and_scope`、`test_repair_cache_does_not_leak_across_subject_or_scope`、`test_ac4_cache_key.py::test_acl4_cache_key_contains_role_and_site_fingerprint` |
+| M5 | `collect_metrics.py` 的 `SKIP_DIRS` 去掉 `.git/` | `1 failed, 77 passed`，退出码 1；红：`test_repair_tree_digest_ignores_git_directory` |
 
-5 次变异全部「改坏即红」，恢复后 `78 passed, exit 0`。
+5 次变异全部「改坏即红」，恢复后 `78 passed, exit 0`。表中数字是全量 `pytest -q`（78 条用例）的实测结果，每次变异后都立刻还原源文件并复查 `git diff` 为空。
 
 ## 3. 唯一一处既有断言变更（必须申报）
 
