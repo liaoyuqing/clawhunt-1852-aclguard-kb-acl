@@ -17,7 +17,11 @@ def test_acl2_leak_suite_100_questions_zero_unauthorized_hits():
 
     assert run.questions == 100
     assert run.principals == 5
-    assert run.checks == 100 * 5 * 40 - 0 or run.checks > 0
+    # 精确断言：断言次数 = 各角色无权条目数之和 = 445 + 429 + 415 + 331 + 372 = 1992。
+    # 旧写法 `== 100 * 5 * 40` 与 `or run.checks > 0` 几乎恒真，等于没断言（买家返修第 3 条）。
+    assert run.checks == 1992
+    assert run.skipped_by_acl == 9108
+    assert run.checks + run.skipped_by_acl == 11100
     assert run.hits == 0
     assert run.pass_rate == 1.0
     assert run.positive_citations > 0

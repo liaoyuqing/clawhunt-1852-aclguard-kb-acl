@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Mapping, Optional, Tuple
 
 from .audit import EVENT_CACHE_REVOKED, format_audit_line, get_audit_logger
 from .cache_key import TTLCache, cache_key
-from .history import render_history
+from .history import render_history, visible_citations_only
 from .models import Chunk, CitationRef, Principal
 from .second_check import describe_for_model, filter_chunks
 
@@ -21,9 +21,16 @@ class ModelRequest:
     # 已按当前权限折叠过的历史轮次；引用不可见者 title/snippet 已换成折叠标记。
     history: List[Dict[str, Any]] = field(default_factory=list)
     folded_count: int = 0
+    # 下一轮允许复用的历史引用（当前仍可见的 doc_id 集合）。角色被收回后自动从集合里消失。
+    reusable_citations: List[str] = field(default_factory=list)
 
     def as_dict(self) -> Dict[str, Any]:
-        return {"question": self.question, "context": self.chunks, "history": self.history}
+        return {
+            "question": self.question,
+            "context": self.chunks,
+            "history": self.history,
+            "reusable_citations": self.reusable_citations,
+        }
 
 
 @dataclass(frozen=True)
@@ -139,6 +146,12 @@ def ask(
     log = get_audit_logger(logger)
     key = cache_key("qa", principal, question)
     current_entries = kb.entry_map() if hasattr(kb, "entry_map") else None
+    # 下一轮允许复用的引用：用当前权限把历史引用过一遍，被收回的条目自然不在这里。
+    # 必须在写入本轮消息之前算，否则本轮的引用会混进「上一轮可复用」集合。
+    reusable_ids: List[str] = []
+    for prior in visible_citations_only(session.messages, principal):
+        if prior.doc_id not in reusable_ids:
+            reusable_ids.append(prior.doc_id)
     dropped_ids: List[str] = []
     cache_hit = False
     cache_revoked = False
@@ -165,6 +178,7 @@ def ask(
                     "dropped": [],
                     "model_context_doc_ids": [],
                     "request_id": request_id,
+                    "reusable_citation_doc_ids": reusable_ids,
                     "cache": {"hit": True, "served": True, "revoked": False},
                     "served_from_cache_despite_now_denied": False,
                 }
@@ -180,6 +194,7 @@ def ask(
         chunks=describe_for_model(result.visible_chunks),
         history=history,
         folded_count=folded_count,
+        reusable_citations=reusable_ids,
     )
     reply = model.complete(request)
 
@@ -200,6 +215,7 @@ def ask(
         "model_context_doc_ids": [c["doc_id"] for c in request.chunks],
         "request_id": request_id,
         "folded_count": folded_count,
+        "reusable_citation_doc_ids": reusable_ids,
         "cache": {"hit": cache_hit, "served": served_from_cache, "revoked": cache_revoked},
         "served_from_cache_despite_now_denied": bool(served_from_cache and cache_revoked),
     }

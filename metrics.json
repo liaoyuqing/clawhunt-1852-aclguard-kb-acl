@@ -1,11 +1,11 @@
 {
-  "collected_at": "2026-11-23T14:19:51+00:00",
+  "collected_at": "2026-11-23T14:41:14+00:00",
   "python": "3.11.9",
-  "test_files": 6,
-  "test_cases": 78,
+  "test_files": 7,
+  "test_cases": 82,
   "package_py_files": 11,
-  "package_loc": 836,
-  "tests_loc": 588,
+  "package_loc": 852,
+  "tests_loc": 748,
   "fixtures": {
     "roles": 5,
     "entries": 40,
@@ -19,8 +19,8 @@
     "sites": 2
   },
   "pytest_exit": 0,
-  "pytest_last_line": "78 passed in 0.58s",
-  "pytest_stdout_sha256": "a78c22f35ae970787b61309b15c395ab0a545fb4dc04e8bedd405767d026f341",
+  "pytest_last_line": "82 passed in 0.66s",
+  "pytest_stdout_sha256": "40f3ef1d762f52650cc676b369f7224960c94e0e48b967ba0dd52ac2e2b601b9",
   "leak_questions": 100,
   "leak_principals": 5,
   "leak_checks": 1992,
@@ -78,5 +78,5 @@
     "hit_count": 0
   },
   "secret_scan_hits": 0,
-  "tree_sha256": "1803c9f6e29bef4c046568eb4628b92713cbda096b2df63ec76b0e3743a83912"
+  "tree_sha256": "bc97221fccb265a123df8ec82d8a54a45494512bfd486150aa8766e031e5bc7b"
 }

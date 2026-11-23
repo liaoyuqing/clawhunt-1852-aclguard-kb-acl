@@ -18,6 +18,10 @@
 | 授权引用（正控） | 1008 |
 | 被丢弃片段累计 | 1992 |
 
+**断言次数 1992 的推导**：1992 = 五个角色各自「本轮被检索到且被二次校验拦下」的条目数之和 ——
+`front 445 + community 429 + sales 415 + sales_lead 331 + finance 372 = 1992`。
+这个数不是估算，`tests/test_ac2_leak_100.py:22`–`tests/test_ac2_leak_100.py:24` 与 `tests/test_rework_1852.py` 的 `test_rework_ac2_checks_equal_exact_sum_of_denied_entries_per_role` 都按精确值断言（`run.checks == 1992`、`run.skipped_by_acl == 9108`、两者之和 `== 11100`），再加上逐角色 `445 / 429 / 415 / 331 / 372` 的字典断言，任何一格偏差都会让用例变红。
+
 > 分母口径：只有「知识库本轮确实检索到、并被助手侧二次校验拦下」的条目才算一个真的检查格。
 > 没被检索到的条目扫描必然是 0，那是空转（`skipped_by_acl`），计入分母只会把命中率稀释到好看，
 > 掩盖检测器本身是否有效。因此 `checks = 1992`，与 `dropped_total` 逐格相等。
@@ -48,7 +52,7 @@
 cat reports/leak_test_report.md
 ```
 
-实测输出：`3 passed in 0.31s`，退出码 `0`（用例数固定 3，耗时随机器浮动）。全量回归见根目录 `reports/pytest_output.txt`（`78 passed`，`EXIT=0`）。
+实测输出：`3 passed in 0.31s`，退出码 `0`（用例数固定 3，耗时随机器浮动）。全量回归见根目录 `reports/pytest_output.txt`（`82 passed`，`EXIT=0`）。
 
 ## 5. 统计口径说明
 
@@ -65,11 +69,12 @@ cat reports/leak_test_report.md
 | 断言 | 位置 |
 | --- | --- |
 | 问题数 100 / 角色数 5 | `tests/test_ac2_leak_100.py:18`、`tests/test_ac2_leak_100.py:19` |
-| 泄露命中 0 | `tests/test_ac2_leak_100.py:21` |
-| 通过率 1.0 | `tests/test_ac2_leak_100.py:22` |
-| 正控 > 0 | `tests/test_ac2_leak_100.py:23` |
-| 夹具形状 5/40/100 与标签分布 | `tests/test_ac2_leak_100.py:36`–`tests/test_ac2_leak_100.py:47` |
-| 报告落盘且含「无命中」 | `tests/test_ac2_leak_100.py:32`–`tests/test_ac2_leak_100.py:33` |
+| 泄露命中 0 | `tests/test_ac2_leak_100.py:25` |
+| 通过率 1.0 | `tests/test_ac2_leak_100.py:26` |
+| 正控 > 0 | `tests/test_ac2_leak_100.py:27` |
+| 夹具形状 5/40/100 与标签分布 | `tests/test_ac2_leak_100.py:44`–`tests/test_ac2_leak_100.py:51` |
+| 报告落盘且含「无命中」 | `tests/test_ac2_leak_100.py:36`–`tests/test_ac2_leak_100.py:37` |
+| 断言次数精确值 1992 与空转 9108 | `tests/test_ac2_leak_100.py:22`–`tests/test_ac2_leak_100.py:24`、`tests/test_rework_1852.py` 的 `test_rework_ac2_checks_equal_exact_sum_of_denied_entries_per_role` |
 | 检测器正控（塞进去必须命中） | `tests/test_repair_gaps.py:316`–`tests/test_repair_gaps.py:335` |
 | 分母口径（空转不计入、checks == dropped_total） | `tests/test_repair_gaps.py:338`–`tests/test_repair_gaps.py:351` |
 | 逐条扫描与计数逻辑 | `aclguard/leak.py:143`–`aclguard/leak.py:159` |
