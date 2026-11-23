@@ -18,6 +18,9 @@
 | `fixtures/roles.json` | 5 个角色（前台 / 社群运营 / 招商业务员 / 招商主管 / 财务） |
 | `fixtures/knowledge_40.json` | 40 条虚构知识，`all_staff` 10 / `role_limited` 12 / `site_limited` 10 / `confidential` 8 |
 | `fixtures/questions_100.json` | 100 个虚构问题 |
+| `AC2_LEAK_TEST_REPORT.md` | **AC2 主证据**：100 问题 × 5 角色的泄露测试报告（指标表、5 行分角色表、判据、复现命令） |
+| `EVIDENCE.md` | 验收证据索引：AC1–AC4 + 判定矩阵的命令、可观察结果、证据路径与断言行号 |
+| `reports/pytest_output.txt` | 全量 `pytest -q` 的真实重定向输出（含末行 `61 passed` 与 `EXIT=0`） |
 | `tests/` | 5 个测试文件 |
 | `scripts/collect_metrics.py` | 现算全部交付数字，写 `metrics.json` |
 | `scripts/selfcheck.sh` | 复制到临时目录后跑全套（等价干净 clone） |
@@ -64,6 +67,7 @@ cat reports/leak_test_report.md
 - 100 个问题 × 5 个角色 = 500 次问答，每次对全部 40 条逐条判定「本次应可见 / 不应可见」，对不应可见的条目检查助手侧产物（回答文本、助手轮次消息与引用、交给模型的 `context`）是否出现其标题或正文前 40 字。
 - 实测断言次数 `11100`、命中 `0`、通过率 `1.0`；正控 `positive_citations = 1008 > 0`，排除「全部拒答」造成的假通过。
 - 说明：用户自己的提问里本来就会带着被问条目的标题，因此泄漏面只统计助手侧产物与模型 `context`，不含 `question` 字段。
+- **完整报告见根目录 [`AC2_LEAK_TEST_REPORT.md`](AC2_LEAK_TEST_REPORT.md)**（指标表、分角色统计、判据与复现命令）；全量回归的逐字输出存档于 [`reports/pytest_output.txt`](reports/pytest_output.txt)，逐条证据索引见 [`EVIDENCE.md`](EVIDENCE.md)。
 
 ### AC3 角色被收回后，历史消息中对应引用显示「该内容已无权查看」
 
