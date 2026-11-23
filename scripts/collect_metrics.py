@@ -154,6 +154,13 @@ def fold_metrics() -> dict:
     }
 
 
+# 行尾归一：Windows 的 core.autocrlf=true 会把工作树 checkout 成 CRLF，
+# 而 Linux/CI 上是 LF。若把原始字节直接喂进摘要，同一份内容在不同平台会算出
+# 不同的 tree_sha256，跨副本比对就失去了意义。统一折成 LF 再哈希。
+def normalize_eol(raw: bytes) -> bytes:
+    return raw.replace(b"\r\n", b"\n")
+
+
 def tree_digest() -> str:
     digest = hashlib.sha256()
     for file in sorted(ROOT.rglob("*")):
@@ -165,7 +172,7 @@ def tree_digest() -> str:
         if rel == "metrics.json":
             continue
         digest.update(rel.encode("utf-8"))
-        digest.update(file.read_bytes())
+        digest.update(normalize_eol(file.read_bytes()))
     return digest.hexdigest()
 
 

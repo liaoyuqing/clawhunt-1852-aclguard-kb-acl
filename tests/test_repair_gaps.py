@@ -410,6 +410,9 @@ def test_repair_tree_digest_ignores_git_directory():
     assert module._skipped(".git/objects/ab/cdef") is True
     assert module._skipped("aclguard/assistant.py") is False
     assert module._skipped("metrics.json") is False
+    # 行尾归一：CRLF 与 LF 是同一份内容，摘要不能因为平台换行习惯而不同。
+    assert module.normalize_eol(b"a\r\nb\r\n") == b"a\nb\n"
+    assert module.normalize_eol(b"a\nb\n") == b"a\nb\n"
 
 
 # ---------------------------------------------------------------- 9. 文档口径

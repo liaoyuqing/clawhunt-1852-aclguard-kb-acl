@@ -17,7 +17,7 @@
 | 5 | AC2 分母虚高：11100 格里绝大多数是空转，且检测器没有正控（把 `scan_text` 改成恒 `False` 仍然 61 绿） | 分母只算「真被检索到并拦下」的格；空转单列 `skipped_by_acl`；新增检测器正控 | `aclguard/leak.py:3`–`aclguard/leak.py:6`、`aclguard/leak.py:143`–`aclguard/leak.py:159` | `tests/test_repair_gaps.py:316`–`tests/test_repair_gaps.py:351` |
 | 6 | `request_id` 没有任何断言，出事后对不上号 | 丢弃事件的 `request_id` 必须等于 `ask()` 返回的那个 | `aclguard/second_check.py:35`–`aclguard/second_check.py:52` | `tests/test_repair_gaps.py:356`–`tests/test_repair_gaps.py:367` |
 | 7 | `CitationRef` 默认 `visibility_label="all_staff"` = 默认放行（fail-open） | 默认改为空串，缺失标签判 `label_unknown` 一律拒绝；旧历史和折叠同理 | `aclguard/models.py:97`、`aclguard/models.py:109` | `tests/test_repair_gaps.py:372`–`tests/test_repair_gaps.py:393` |
-| 8 | `tree_sha256` 把 `.git` 也算进去，导致提交目录与干净 clone 的摘要必然不同（c8283d… vs 733f3c…） | `SKIP_DIRS` 排除 `.git/`，摘要可跨副本比对 | `scripts/collect_metrics.py:75`–`scripts/collect_metrics.py:84` | `tests/test_repair_gaps.py:398`–`tests/test_repair_gaps.py:412` |
+| 8 | `tree_sha256` 把 `.git` 也算进去，且按原始字节哈希；前者让提交目录与干净 clone 必然不同（c8283d… vs 733f3c…），后者让 `core.autocrlf=true` 的 CRLF 工作树与 LF 的 CI 得出两个摘要 | `SKIP_DIRS` 排除 `.git/`；`normalize_eol` 先把 `\r\n` 折成 `\n` 再进摘要，同一份内容跨平台同哈希 | `scripts/collect_metrics.py:75`–`scripts/collect_metrics.py:90` | `tests/test_repair_gaps.py:398`–`tests/test_repair_gaps.py:415` |
 | 9 | `reports/ac_matrix.md` 写「51 例」，但矩阵夹具只有 40 格 | 改为 40 例矩阵 + 说明 51 是**用例数**（含 1 例未知标签） | `reports/ac_matrix.md:80` | `tests/test_repair_gaps.py:417`–`tests/test_repair_gaps.py:424` |
 
 ## 2. 变异自证（MUTATION）
